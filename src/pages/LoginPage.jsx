@@ -16,21 +16,23 @@ export default function LoginPage() {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError('');
+  e.preventDefault();
+  setLoading(true);
+  setError('');
 
-    try {
-      await login({ email: form.email, password: form.password });
-      // Redirect to products page after successful login
-      navigate('/products');
-    } catch (err) {
-      console.error('Login failed', err);
-      setError('Invalid email or password.');
-    } finally {
-      setLoading(false);
-    }
-  };
+  try {
+    await login({ email: form.email, password: form.password });
+    // Reload the page to fetch fresh data and state after login
+    window.location.reload();
+    // Optionally navigate (may not be needed if reload resets state)
+    navigate('/products');
+  } catch (err) {
+    console.error('Login failed', err);
+    setError('Invalid email or password.');
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-100 to-blue-100">

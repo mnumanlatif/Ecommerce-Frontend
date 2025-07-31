@@ -9,11 +9,16 @@ const CartPage = () => {
   const [loading, setLoading] = useState(true);
 
   const fetchCart = async () => {
+    const token = localStorage.getItem('token');
+    if (!user || !token) {
+      setLoading(false);
+      return;
+    }
+
     try {
-      const token = localStorage.getItem('token');
       const res = await axios.get(`http://localhost:5005/api/cart/cart?userId=${user._id}`, {
-  headers: { Authorization: `Bearer ${token}` },
-});
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
       setCart(res.data.items || []);
     } catch (err) {
@@ -45,8 +50,7 @@ const CartPage = () => {
   };
 
   const handleQuantityChange = (productId, quantity) => {
-    if (quantity < 1) return; // prevent zero or negative
-
+    if (quantity < 1) return;
     setCart(prev =>
       prev.map(item =>
         item.productId === productId ? { ...item, quantity: parseInt(quantity) } : item
@@ -54,13 +58,10 @@ const CartPage = () => {
     );
   };
 
-  // Ideally, sync quantity changes with backend too.
-  // Add a debounce or a "Update" button in real app.
-
   const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
   useEffect(() => {
-    if (user) fetchCart();
+    fetchCart(); // fetchCart already checks if user/token exist
   }, [user]);
 
   if (loading) return <div className="text-center mt-10">Loading cart...</div>;
@@ -92,22 +93,21 @@ const CartPage = () => {
             </div>
 
             <div className="flex items-center gap-2">
-  <button
-    onClick={() => handleQuantityChange(item.productId, item.quantity - 1)}
-    className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300"
-    disabled={item.quantity <= 1}
-  >
-    −
-  </button>
-  <span className="px-3">{item.quantity}</span>
-  <button
-    onClick={() => handleQuantityChange(item.productId, item.quantity + 1)}
-    className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300"
-  >
-    +
-  </button>
-</div>
-
+              <button
+                onClick={() => handleQuantityChange(item.productId, item.quantity - 1)}
+                className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300"
+                disabled={item.quantity <= 1}
+              >
+                −
+              </button>
+              <span className="px-3">{item.quantity}</span>
+              <button
+                onClick={() => handleQuantityChange(item.productId, item.quantity + 1)}
+                className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300"
+              >
+                +
+              </button>
+            </div>
 
             <button
               onClick={() => handleRemove(item.productId)}
