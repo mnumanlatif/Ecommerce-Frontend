@@ -74,6 +74,19 @@ export default function RegisterPage() {
           required
           className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400"
         />
+      <div className="space-y-1">
+  <label htmlFor="role" className="text-sm font-medium text-gray-700">
+    Select Role
+  </label>
+  <select
+    id="role"
+    name="role"
+    className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400"
+  >
+    <option value="admin">Admin</option>
+    <option value="user">User</option>
+  </select>
+</div>
 
         <button
           type="submit"

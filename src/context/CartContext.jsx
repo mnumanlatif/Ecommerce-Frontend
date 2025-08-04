@@ -40,31 +40,58 @@ export const CartProvider = ({ children }) => {
   }, [user]);
 
   // Add item to cart
-  const addToCart = async (product) => {
-    try {
-      const res = await axios.post(
-        'http://localhost:5005/api/cart/add',
-        { ...product, quantity: 1 },
-        getConfig()
-      );
-      setCart(res.data.items || []);
-    } catch (err) {
-      console.error('Error adding to cart:', err);
+const addToCart = async (product) => {
+  try {
+    if (!user?._id) {
+      console.warn('User not logged in');
+      return;
     }
-  };
 
-  // Remove item
-  const removeFromCart = async (productId) => {
-    try {
-      await axios.delete('http://localhost:5005/api/cart/remove', {
-        headers: getConfig().headers,
-        data: { productId },
-      });
-      setCart((prev) => prev.filter((item) => item.productId !== productId));
-    } catch (err) {
-      console.error('Error removing from cart:', err);
+    // Construct payload as per backend spec
+    const cartPayload = {
+      userId: user._id,
+      items: [
+        {
+          productId: product._id,
+          name: product.title || product.name || 'Unnamed',
+          price: product.price || 0,
+          imageUrl: product.imageUrl || '',
+          quantity: 1,
+        },
+      ],
+    };
+console.log('Add to cart payload:', cartPayload);
+
+    const res = await axios.post(
+      'http://localhost:5005/api/cart/add',
+      cartPayload,
+      getConfig()
+    );
+    setCart(res.data.cart?.items || []);  // your controller returns cart in "cart"
+  } catch (err) {
+    console.error('Error adding to cart:', err);
+  }
+};
+
+const removeFromCart = async (productId) => {
+  try {
+    if (!user?._id) {
+      console.warn('User not logged in');
+      return;
     }
-  };
+
+    await axios.post(
+      'http://localhost:5005/api/cart/remove',
+      { userId: user._id, productId },
+      getConfig()
+    );
+
+    setCart((prev) => prev.filter((item) => item.productId !== productId));
+  } catch (err) {
+    console.error('Error removing from cart:', err);
+  }
+};
+
 
   // Update quantity
   const updateQuantity = async (productId, quantity) => {

@@ -12,27 +12,42 @@ export default function LoginPage() {
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
-    setError(''); // Clear error on input change
+    setError('');
   };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  setLoading(true);
-  setError('');
+    e.preventDefault();
+    setLoading(true);
+    setError('');
 
-  try {
-    await login({ email: form.email, password: form.password });
-    // Reload the page to fetch fresh data and state after login
-    window.location.reload();
-    // Optionally navigate (may not be needed if reload resets state)
-    navigate('/products');
-  } catch (err) {
-    console.error('Login failed', err);
-    setError('Invalid email or password.');
-  } finally {
-    setLoading(false);
-  }
-};
+    try {
+      const user = await login({ email: form.email, password: form.password });
+      console.log('Logged in user:', user);
+
+      if (!user || !user.role) {
+        setError('Login failed: User role missing.');
+        setLoading(false);
+        return;
+      }
+
+      // Navigate to the correct page
+      if (user.role === 'admin') {
+        navigate('/admin/add-product');
+      } else {
+        navigate('/products');
+      }
+
+      // Soft reload the page after navigation
+      setTimeout(() => {
+        window.location.replace(window.location.pathname);
+      }, 50); // Delay ensures navigate completes
+    } catch (err) {
+      console.error('Login failed', err);
+      setError('Invalid email or password.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-100 to-blue-100">

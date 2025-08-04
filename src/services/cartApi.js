@@ -22,6 +22,7 @@ export const addToCart = async (cartData) => {
   try {
     console.log('Sending cart data:', cartData);
     const res = await axios.post(`${BASE_URL}/add`, cartData, getAuthHeaders());
+    console.log('Add to cart response:', res.data);
     return res.data;
   } catch (err) {
     console.error('Add to cart error:', err.response?.data || err.message);
@@ -31,21 +32,27 @@ export const addToCart = async (cartData) => {
 
 // Remove item from cart
 export const removeFromCart = async (userId, productId) => {
-  const token = localStorage.getItem('token');
-  return await axios.post('http://localhost:5005/api/cart/remove', {
-    userId,
-    productId,
-  }, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+  try {
+    console.log('Removing from cart:', { userId, productId });
+    const res = await axios.post(
+      `${BASE_URL}/remove`,
+      { userId, productId },
+      getAuthHeaders()
+    );
+    console.log('Remove from cart response:', res.data);
+    return res.data;
+  } catch (err) {
+    console.error('Remove from cart error:', err.response?.data || err.message);
+    throw err;
+  }
 };
-
-
 
 // Checkout cart
 export const checkout = async () => {
   try {
+    console.log('Checkout initiated');
     const res = await axios.post(`${BASE_URL}/checkout`, {}, getAuthHeaders());
+    console.log('Checkout response:', res.data);
     return res.data;
   } catch (err) {
     console.error('Checkout error:', err.response?.data || err.message);

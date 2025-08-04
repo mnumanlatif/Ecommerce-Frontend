@@ -2,24 +2,27 @@ import React from 'react';
 import { FaWhatsapp } from 'react-icons/fa';
 
 const WhatsappButton = () => {
-  const whatsappUrl = 'https://api.whatsapp.com/send/?phone=03054572698&text&type=phone_number&app_absent=0';
+  // Use international format without "+" and leading zero (92 for Pakistan)
+  const phoneNumber = '923464080360';
+  const message = encodeURIComponent('Hello! I’d like to get in touch with you.');
+  const whatsappUrl = `https://wa.me/${phoneNumber}?text=${message}`;
 
   return (
-    <div className="group fixed bottom-6 right-6">
-  <a
-    href={whatsappUrl}
-    target="_blank"
-    rel="noopener noreferrer"
-    className="bg-green-500 hover:bg-green-600 text-white rounded-full p-4 shadow-lg flex items-center justify-center transition-transform hover:scale-110"
-    aria-label="Chat on WhatsApp"
-  >
-    <FaWhatsapp size={28} />
-  </a>
-  <span className="absolute bottom-16 right-0 opacity-0 group-hover:opacity-100 transition bg-black text-white text-sm px-3 py-1 rounded-md whitespace-nowrap">
-    Chat with us on WhatsApp
-  </span>
-</div>
-
+    <div className="group fixed bottom-6 right-6 z-50">
+      <a
+        href={whatsappUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="bg-green-500 hover:bg-green-600 text-white rounded-full p-4 shadow-lg flex items-center justify-center transition-transform hover:scale-110"
+        title="Chat on WhatsApp"
+        aria-label="Chat on WhatsApp"
+      >
+        <FaWhatsapp size={28} />
+      </a>
+      <span className="absolute bottom-16 right-1/2 translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black text-white text-sm px-3 py-1 rounded-md whitespace-nowrap shadow-md">
+        Chat with us on WhatsApp
+      </span>
+    </div>
   );
 };
 

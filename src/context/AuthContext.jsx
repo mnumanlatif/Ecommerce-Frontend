@@ -10,15 +10,24 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // ⏳ LOGIN
+  // 🔐 LOGIN
   const login = async (credentials) => {
     setLoading(true);
     try {
       const res = await authAPI.login(credentials);
-      localStorage.setItem('token', res.data.token); // store JWT
-      localStorage.setItem('auth-event', 'login');   // sync tabs
-      setUser(res.data.user);
-      return res;
+      const { token, user: userData } = res.data;
+
+      // ✅ DEBUG: Check if role exists
+      if (!userData?.role) {
+        console.warn('User role missing in login response. Role-based redirects may not work.');
+      }
+
+      // Store token and sync login event
+      localStorage.setItem('token', token);
+      localStorage.setItem('auth-event', 'login');
+
+      setUser(userData); // Should contain role
+      return userData;
     } catch (error) {
       setUser(null);
       throw error;
@@ -27,15 +36,18 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // 📝 REGISTER (store token just like login)
+  // 📝 REGISTER
   const register = async (userData) => {
     setLoading(true);
     try {
       const res = await authAPI.register(userData);
-      localStorage.setItem('token', res.data.token); // <-- Add this line
+      const { token, user } = res.data;
+
+      localStorage.setItem('token', token);
       localStorage.setItem('auth-event', 'login');
-      setUser(res.data.user);
-      return res;
+
+      setUser(user); // Should contain role
+      return user;
     } catch (error) {
       setUser(null);
       throw error;
@@ -50,7 +62,7 @@ export const AuthProvider = ({ children }) => {
     try {
       await authAPI.logout();
     } catch (error) {
-      console.error('Logout failed', error);
+      console.error('Logout failed:', error);
     } finally {
       localStorage.removeItem('token');
       localStorage.setItem('auth-event', 'logout');
@@ -59,9 +71,9 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // 🔁 Restore session on reload
+  // 🔁 RESTORE SESSION on reload
   useEffect(() => {
-    const fetchUser = async () => {
+    const restoreSession = async () => {
       const token = localStorage.getItem('token');
       if (!token) {
         setUser(null);
@@ -71,25 +83,32 @@ export const AuthProvider = ({ children }) => {
 
       try {
         const res = await authAPI.getCurrentUser();
-        setUser(res.data);
+        const userData = res.data;
+
+        if (!userData?.role) {
+          console.warn('User role missing in session restore. Role-based redirects may fail.');
+        }
+
+        setUser(userData); // Should contain .role
       } catch (err) {
         setUser(null);
-        localStorage.removeItem('token'); // session expired or invalid
+        localStorage.removeItem('token');
       } finally {
         setLoading(false);
       }
     };
 
-    fetchUser();
+    restoreSession();
   }, []);
 
-  // 🌐 Cross-tab sync (login/logout across browser tabs)
+  // 🌐 CROSS-TAB login/logout sync
   useEffect(() => {
     const handleStorage = (e) => {
       if (e.key === 'auth-event') {
-        window.location.reload(); // auto-refresh to sync session
+        window.location.reload();
       }
     };
+
     window.addEventListener('storage', handleStorage);
     return () => window.removeEventListener('storage', handleStorage);
   }, []);
