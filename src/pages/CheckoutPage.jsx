@@ -22,11 +22,11 @@ const CheckoutPage = () => {
 
   if (!cart.length) {
     return (
-      <div className="min-h-screen flex flex-col justify-center items-center bg-gray-900 text-white">
+      <div className="min-h-screen flex flex-col justify-center items-center bg-gray-100 text-gray-800">
         <h2 className="text-3xl font-semibold mb-6">🛒 No items to checkout</h2>
         <button
           onClick={() => navigate('/cart')}
-          className="text-indigo-400 hover:underline font-medium"
+          className="text-blue-600 hover:underline font-medium"
         >
           ← Back to Cart
         </button>
@@ -39,54 +39,50 @@ const CheckoutPage = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  setLoading(true);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
 
-  try {
-    const token = localStorage.getItem('token')?.replace(/^"(.*)"$/, '$1');
-    console.log(`token: ${token}`);
+    try {
+      const token = localStorage.getItem('token')?.replace(/^"(.*)"$/, '$1');
+      if (!token) {
+        toast.error('Please login to proceed with checkout.');
+        navigate('/login');
+        return;
+      }
 
-    if (!token) {
-      toast.error('Please login to proceed with checkout.');
-      navigate('/login');
-      return;
+      const items = cart.map((item) => ({
+        productId: item.productId || item._id || item.id,
+        quantity: item.quantity ?? 1,
+        price: item.price ?? 10,
+      }));
+
+      const orderData = {
+        items,
+        total,
+        shippingDetails: formData,
+        paymentMethod: formData.paymentMethod,
+      };
+
+      const res = await axios.post('http://localhost:7000/api/pay/pay', orderData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (res.data.success) {
+        // toast.success('Order placed successfully!');
+        setShowModal(true);
+      } else {
+        toast.error('Payment failed, please try again.');
+      }
+    } catch (err) {
+      toast.error(err?.response?.data?.message || err.message || 'Failed to place order');
+    } finally {
+      setLoading(false);
     }
-
-    const items = cart.map((item) => ({
-      productId: item.productId || item._id || item.id,
-      quantity: item.quantity ?? 1,
-      price: item.price ?? 10,
-    }));
-
-    const orderData = {
-      items,
-      total,
-      shippingDetails: formData,
-      paymentMethod: formData.paymentMethod,
-    };
-
-    const res = await axios.post('http://localhost:7000/api/pay/pay', orderData, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
-    });
-
-    if (res.data.success) {
-      toast.success('Order placed successfully!');
-      setShowModal(true);
-    } else {
-      toast.error('Payment failed, please try again.');
-    }
-  } catch (err) {
-    console.error('Order failed:', err?.response?.data || err.message);
-    toast.error(err?.response?.data?.message || err.message || 'Failed to place order');
-  } finally {
-    setLoading(false);
-  }
-};
-
+  };
 
   const handleModalClose = () => {
     setShowModal(false);
@@ -94,16 +90,16 @@ const handleSubmit = async (e) => {
   };
 
   return (
-    <section className="min-h-screen bg-gray-900 text-white py-14 px-4">
-      <div className="max-w-4xl mx-auto bg-gray-800 rounded-3xl shadow-lg shadow-indigo-700/30 p-10">
-        <h2 className="text-4xl font-extrabold text-indigo-300 mb-10 border-b border-indigo-600 pb-4 text-center">
+    <section className="min-h-screen bg-gray-100 text-gray-800 py-14 px-4">
+      <div className="max-w-4xl mx-auto bg-white rounded-3xl shadow-xl p-10 border border-gray-200">
+        <h2 className="text-4xl font-extrabold text-blue-900 mb-10 border-b pb-4 text-center">
           💳 Checkout
         </h2>
 
         <form onSubmit={handleSubmit} className="space-y-8">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="flex flex-col">
-              <label htmlFor="fullName" className="mb-2 font-semibold text-indigo-300">
+              <label htmlFor="fullName" className="mb-2 font-semibold text-gray-700">
                 Full Name
               </label>
               <input
@@ -114,12 +110,12 @@ const handleSubmit = async (e) => {
                 onChange={handleChange}
                 required
                 placeholder="Muhammad Numan"
-                className="px-4 py-3 rounded-xl bg-gray-900 border border-indigo-500 text-white focus:ring-2 focus:ring-indigo-500"
+                className="px-4 py-3 rounded-xl bg-white border border-gray-300 focus:ring-2 focus:ring-blue-500"
               />
             </div>
 
             <div className="flex flex-col">
-              <label htmlFor="phone" className="mb-2 font-semibold text-indigo-300">
+              <label htmlFor="phone" className="mb-2 font-semibold text-gray-700">
                 Phone Number
               </label>
               <input
@@ -130,13 +126,13 @@ const handleSubmit = async (e) => {
                 onChange={handleChange}
                 required
                 placeholder="+92-123456789"
-                className="px-4 py-3 rounded-xl bg-gray-900 border border-indigo-500 text-white focus:ring-2 focus:ring-indigo-500"
+                className="px-4 py-3 rounded-xl bg-white border border-gray-300 focus:ring-2 focus:ring-blue-500"
               />
             </div>
           </div>
 
           <div className="flex flex-col">
-            <label htmlFor="address" className="mb-2 font-semibold text-indigo-300">
+            <label htmlFor="address" className="mb-2 font-semibold text-gray-700">
               Address
             </label>
             <input
@@ -147,13 +143,13 @@ const handleSubmit = async (e) => {
               onChange={handleChange}
               required
               placeholder="Gulberg Lahore"
-              className="w-full px-4 py-3 rounded-xl bg-gray-900 border border-indigo-500 text-white focus:ring-2 focus:ring-indigo-500"
+              className="w-full px-4 py-3 rounded-xl bg-white border border-gray-300 focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="flex flex-col">
-              <label htmlFor="city" className="mb-2 font-semibold text-indigo-300">
+              <label htmlFor="city" className="mb-2 font-semibold text-gray-700">
                 City
               </label>
               <input
@@ -164,12 +160,12 @@ const handleSubmit = async (e) => {
                 onChange={handleChange}
                 required
                 placeholder="Lahore"
-                className="px-4 py-3 rounded-xl bg-gray-900 border border-indigo-500 text-white focus:ring-2 focus:ring-indigo-500"
+                className="px-4 py-3 rounded-xl bg-white border border-gray-300 focus:ring-2 focus:ring-blue-500"
               />
             </div>
 
             <div className="flex flex-col">
-              <label htmlFor="postalCode" className="mb-2 font-semibold text-indigo-300">
+              <label htmlFor="postalCode" className="mb-2 font-semibold text-gray-700">
                 Postal Code
               </label>
               <input
@@ -180,18 +176,18 @@ const handleSubmit = async (e) => {
                 onChange={handleChange}
                 required
                 placeholder="54000"
-                className="px-4 py-3 rounded-xl bg-gray-900 border border-indigo-500 text-white focus:ring-2 focus:ring-indigo-500"
+                className="px-4 py-3 rounded-xl bg-white border border-gray-300 focus:ring-2 focus:ring-blue-500"
               />
             </div>
           </div>
 
           <div className="flex flex-col">
-            <label className="mb-2 font-semibold text-indigo-300">Payment Method</label>
+            <label className="mb-2 font-semibold text-gray-700">Payment Method</label>
             <select
               name="paymentMethod"
               value={formData.paymentMethod}
               onChange={handleChange}
-              className="w-full px-4 py-3 rounded-xl bg-gray-900 border border-indigo-500 text-white focus:ring-2 focus:ring-indigo-500"
+              className="w-full px-4 py-3 rounded-xl bg-white border border-gray-300 focus:ring-2 focus:ring-blue-500"
             >
               <option value="card">Credit/Debit Card</option>
               <option value="cod">Cash on Delivery</option>
@@ -201,8 +197,8 @@ const handleSubmit = async (e) => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-4 bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-700 hover:to-indigo-600
-                       text-white font-bold rounded-2xl shadow-lg shadow-indigo-600/30 hover:shadow-indigo-600/50 transition duration-300"
+            className="w-full py-4 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600
+                       text-white font-bold rounded-2xl shadow-md hover:shadow-lg transition duration-300"
           >
             {loading ? 'Placing Order...' : `Pay $${total.toFixed(2)}`}
           </button>

@@ -35,27 +35,24 @@ const CartPage = () => {
     }
   };
 
-const handleRemove = async (productId) => {
-  try {
-    await removeFromCart(user._id, productId);
-    toast.success('Item removed!');
+  const handleRemove = async (productId) => {
+    const token = localStorage.getItem('token');
+    try {
+      await removeFromCart(user._id, productId);
+      toast.success('Item removed!');
 
-    // Fetch updated cart
-    const res = await axios.get(
-      `http://localhost:5005/api/cart/cart?userId=${user._id}`,
-      {
-        headers: { Authorization: `Bearer ${token}` },
-        withCredentials: true,
-      }
-    );
-    const updatedItems = res.data.items || [];
-    setCartCount(updatedItems.length); // ⬅️ update navbar
-  } catch {
-    // toast.error('Could not remove item.');
-  }
-};
-
-
+      const res = await axios.get(
+        `http://localhost:5005/api/cart/cart?userId=${user._id}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+          withCredentials: true,
+        }
+      );
+      setCart(res.data.items || []);
+    } catch {
+      toast.error('Could not remove item.');
+    }
+  };
 
   const handleQuantityChange = async (productId, quantity) => {
     if (quantity < 1) return;
@@ -72,22 +69,21 @@ const handleRemove = async (productId) => {
 
   useEffect(() => {
     fetchCart();
-    // eslint-disable-next-line
   }, [user]);
 
   return (
-    <section className="min-h-screen bg-gray-900 text-gray-100 py-14 px-6">
+    <section className="min-h-screen bg-white text-gray-800 py-14 px-6">
       <div className="max-w-7xl mx-auto">
         <header className="text-center mb-12">
-          <h1 className="text-5xl font-extrabold text-white drop-shadow-lg">
+          <h1 className="text-5xl font-extrabold text-gray-900 drop-shadow">
             🛒 Your Cart
           </h1>
-          <p className="text-gray-400 mt-2">Review your items before checkout</p>
-          <div className="mt-4 w-20 h-1 bg-indigo-500 rounded-full mx-auto shadow-lg"></div>
+          <p className="text-gray-500 mt-2">Review your items before checkout</p>
+          <div className="mt-4 w-20 h-1 bg-blue-600 rounded-full mx-auto shadow-md"></div>
         </header>
 
         {loading ? (
-          <p className="text-center text-indigo-400 text-xl animate-pulse">
+          <p className="text-center text-blue-500 text-xl animate-pulse">
             Loading your cart...
           </p>
         ) : cart.length === 0 ? (
@@ -99,8 +95,7 @@ const handleRemove = async (productId) => {
               {cart.map((item, i) => (
                 <div
                   key={item.productId}
-                  className="bg-gray-800 rounded-3xl p-6 shadow-lg shadow-indigo-700/30 hover:shadow-indigo-700/50
-                             transform transition duration-300 hover:scale-[1.02] flex gap-6 items-center"
+                  className="bg-white rounded-2xl p-6 shadow-md border border-gray-200 flex gap-6 items-center transition-transform duration-300 hover:scale-[1.01]"
                   style={{
                     animation: `fadeInUp 0.5s ease forwards`,
                     animationDelay: `${i * 0.1}s`,
@@ -110,36 +105,36 @@ const handleRemove = async (productId) => {
                   <img
                     src={item.imageUrl || DEFAULT_IMAGE}
                     alt={item.name}
-                    className="w-28 h-28 rounded-xl object-cover border border-indigo-600"
+                    className="w-28 h-28 rounded-xl object-cover border border-blue-300"
                   />
                   <div className="flex-1">
-                    <h3 className="text-2xl font-bold text-indigo-300">{item.name}</h3>
-                    <p className="text-indigo-400 text-sm line-clamp-2 mb-2">
+                    <h3 className="text-2xl font-bold text-gray-900">{item.name}</h3>
+                    <p className="text-gray-500 text-sm line-clamp-2 mb-2">
                       {item.description || 'No description.'}
                     </p>
-                    <p className="text-indigo-500 text-lg font-bold">
+                    <p className="text-lg font-semibold text-blue-600">
                       ${item.price.toFixed(2)}
                     </p>
                   </div>
                   <div className="flex flex-col items-center space-y-2">
-                    <div className="flex items-center bg-gray-700 px-4 py-1 rounded-full">
+                    <div className="flex items-center bg-gray-100 px-4 py-1 rounded-full">
                       <button
                         onClick={() => handleQuantityChange(item.productId, item.quantity - 1)}
-                        className="text-indigo-400 text-xl px-2 hover:text-indigo-300"
+                        className="text-blue-600 text-xl px-2 hover:text-blue-500"
                       >
                         −
                       </button>
-                      <span className="mx-2 text-white">{item.quantity}</span>
+                      <span className="mx-2 text-gray-900">{item.quantity}</span>
                       <button
                         onClick={() => handleQuantityChange(item.productId, item.quantity + 1)}
-                        className="text-indigo-400 text-xl px-2 hover:text-indigo-300"
+                        className="text-blue-600 text-xl px-2 hover:text-blue-500"
                       >
                         +
                       </button>
                     </div>
                     <button
                       onClick={() => handleRemove(item.productId)}
-                      className="text-sm text-red-400 hover:underline"
+                      className="text-sm text-red-500 hover:underline"
                     >
                       Remove
                     </button>
@@ -149,32 +144,26 @@ const handleRemove = async (productId) => {
             </div>
 
             {/* Right: Summary */}
-            <div className="bg-gray-800 rounded-3xl p-6 shadow-lg shadow-indigo-700/30 flex flex-col justify-between">
+            <div className="bg-white rounded-2xl p-6 shadow-md border border-gray-200 flex flex-col justify-between">
               <div>
-                <h2 className="text-3xl font-extrabold text-indigo-300 mb-4">Summary</h2>
+                <h2 className="text-3xl font-bold text-blue-900 mb-4 text-center">Summary</h2>
                 <div className="space-y-3">
                   {cart.map((item) => (
-                    <div
-                      key={item.productId}
-                      className="flex justify-between text-gray-300"
-                    >
-                      <span className="truncate">
-                        {item.name} x {item.quantity}
-                      </span>
+                    <div key={item.productId} className="flex justify-between text-gray-700">
+                      <span>{item.name} x {item.quantity}</span>
                       <span>${(item.price * item.quantity).toFixed(2)}</span>
                     </div>
                   ))}
                 </div>
               </div>
 
-              <div className="mt-6 border-t border-indigo-500 pt-4">
-                <p className="text-xl font-bold text-indigo-400 mb-4">
+              <div className="mt-6 border-t border-blue-200 pt-4">
+                <p className="text-xl font-bold text-blue-600 mb-4">
                   Total: ${total.toFixed(2)}
                 </p>
                 <button
                   onClick={handleCheckout}
-                  className="w-full bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-700 hover:to-indigo-600
-                             text-white font-bold py-3 rounded-2xl shadow-md hover:shadow-lg transition duration-300"
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl shadow hover:shadow-md transition duration-300"
                 >
                   Proceed to Checkout
                 </button>

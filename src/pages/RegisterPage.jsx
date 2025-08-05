@@ -40,21 +40,18 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-[#0f0c29] via-[#302b63] to-[#24243e] px-4 py-12">
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4 py-12">
       <form
         onSubmit={handleSubmit}
-        className="w-full max-w-md rounded-[2rem] backdrop-blur-3xl bg-white/10 border border-white/20 shadow-2xl p-10 space-y-6 text-white relative"
+        className="w-full max-w-md bg-white border border-gray-200 shadow-lg rounded-3xl p-10 space-y-6 text-gray-800 animate-fadeIn"
       >
-        {/* Floating Glass Shine */}
-        <div className="absolute -top-1 -left-1 w-full h-full rounded-[2rem] bg-gradient-to-br from-white/20 to-transparent blur-[3px] z-0 pointer-events-none" />
-
-        <h2 className="text-4xl font-extrabold text-center text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-500 drop-shadow">
+        <h2 className="text-4xl font-extrabold text-center text-gray-800 mb-4">
           Create Account
         </h2>
 
         {/* Full Name */}
         <div className="relative">
-          <label className="block text-sm font-semibold text-indigo-300 mb-1">Full Name</label>
+          <label className="block text-sm font-semibold text-gray-700 mb-1">Full Name</label>
           <input
             type="text"
             name="name"
@@ -62,13 +59,13 @@ export default function RegisterPage() {
             onChange={handleChange}
             placeholder="John Doe"
             required
-            className="w-full px-4 py-3 bg-white/5 border border-indigo-600 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-pink-400 shadow-sm transition duration-200"
+            className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-purple-500 shadow-sm transition"
           />
         </div>
 
         {/* Email */}
         <div className="relative">
-          <label className="block text-sm font-semibold text-indigo-300 mb-1">Email</label>
+          <label className="block text-sm font-semibold text-gray-700 mb-1">Email</label>
           <input
             type="email"
             name="email"
@@ -76,13 +73,13 @@ export default function RegisterPage() {
             onChange={handleChange}
             placeholder="you@example.com"
             required
-            className="w-full px-4 py-3 bg-white/5 border border-indigo-600 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-pink-400 shadow-sm transition duration-200"
+            className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-purple-500 shadow-sm transition"
           />
         </div>
 
         {/* Password */}
         <div className="relative">
-          <label className="block text-sm font-semibold text-indigo-300 mb-1">Password</label>
+          <label className="block text-sm font-semibold text-gray-700 mb-1">Password</label>
           <input
             type="password"
             name="password"
@@ -90,29 +87,29 @@ export default function RegisterPage() {
             onChange={handleChange}
             placeholder="••••••••"
             required
-            className="w-full px-4 py-3 bg-white/5 border border-indigo-600 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-pink-400 shadow-sm transition duration-200"
+            className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-purple-500 shadow-sm transition"
           />
         </div>
 
         {/* Role */}
         <div className="relative">
-          <label className="block text-sm font-semibold text-indigo-300 mb-1">Select Role</label>
+          <label className="block text-sm font-semibold text-gray-700 mb-1">Select Role</label>
           <select
             name="role"
             value={form.role}
             onChange={handleChange}
-            className="w-full px-4 py-3 bg-white/5 border border-indigo-600 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-pink-400 shadow-sm transition duration-200"
+            className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-purple-500 shadow-sm transition"
           >
             <option value="admin">Admin</option>
             <option value="user">User</option>
           </select>
         </div>
 
-        {/* Button */}
+        {/* Submit Button */}
         <button
           type="submit"
           disabled={loading}
-          className={`w-full py-3 rounded-xl font-semibold text-white transition-all duration-300 bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 hover:brightness-110 hover:scale-[1.02] ${
+          className={`w-full py-3 rounded-xl text-white font-semibold transition-all duration-300 bg-gradient-to-r from-purple-500 to-indigo-500 hover:brightness-110 hover:scale-[1.02] ${
             loading ? 'opacity-50 cursor-not-allowed' : ''
           }`}
         >
@@ -120,9 +117,9 @@ export default function RegisterPage() {
         </button>
 
         {/* Login Link */}
-        <p className="text-center text-sm text-indigo-200">
+        <p className="text-center text-sm text-gray-500">
           Already have an account?{' '}
-          <Link to="/login" className="font-medium text-pink-400 hover:underline">
+          <Link to="/login" className="font-medium text-purple-600 hover:underline">
             Login
           </Link>
         </p>

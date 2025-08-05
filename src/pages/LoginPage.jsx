@@ -42,15 +42,15 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 px-4 text-white">
-      <div className="w-full max-w-md bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl rounded-3xl p-8 animate-fadeIn">
-        <h2 className="text-3xl font-extrabold text-center mb-6 bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 bg-clip-text text-transparent">
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
+      <div className="w-full max-w-md bg-white shadow-lg rounded-3xl p-8 border border-gray-200 animate-fadeIn">
+        <h2 className="text-3xl font-extrabold text-center mb-6 text-gray-800">
           Welcome Back 👋
         </h2>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label className="block text-sm font-medium mb-1">Email</label>
+            <label className="block text-sm font-medium mb-1 text-gray-700">Email</label>
             <input
               type="email"
               name="email"
@@ -58,12 +58,12 @@ export default function LoginPage() {
               onChange={handleChange}
               placeholder="you@example.com"
               required
-              className="w-full px-4 py-3 rounded-xl bg-gray-900 text-white border border-white/20 focus:outline-none focus:ring-2 focus:ring-purple-500"
+              className="w-full px-4 py-3 rounded-xl bg-gray-50 text-gray-900 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1">Password</label>
+            <label className="block text-sm font-medium mb-1 text-gray-700">Password</label>
             <input
               type="password"
               name="password"
@@ -71,7 +71,7 @@ export default function LoginPage() {
               onChange={handleChange}
               placeholder="••••••••"
               required
-              className="w-full px-4 py-3 rounded-xl bg-gray-900 text-white border border-white/20 focus:outline-none focus:ring-2 focus:ring-purple-500"
+              className="w-full px-4 py-3 rounded-xl bg-gray-50 text-gray-900 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500"
             />
           </div>
 
@@ -80,18 +80,18 @@ export default function LoginPage() {
             disabled={loading}
             className={`w-full py-3 rounded-xl text-white font-semibold text-lg shadow-md transition ${
               loading
-                ? 'bg-purple-400 cursor-not-allowed'
-                : 'bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600'
+                ? 'bg-purple-300 cursor-not-allowed'
+                : 'bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600'
             }`}
           >
             {loading ? 'Logging in...' : 'Login'}
           </button>
 
-          <p className="text-center text-sm text-gray-400">
+          <p className="text-center text-sm text-gray-500">
             Don’t have an account?{' '}
             <Link
               to="/register"
-              className="text-purple-400 hover:underline font-medium"
+              className="text-purple-600 hover:underline font-medium"
             >
               Register here
             </Link>

@@ -8,48 +8,47 @@ const ProductList = () => {
   const { products, loading, error } = useProducts();
 
   React.useEffect(() => {
-    if (error) {
-      toast.error(`Error: ${error}`);
-    }
+    if (error) toast.error(`Error: ${error}`);
   }, [error]);
 
   return (
     <>
       <WhatsappButton />
-      <section className="min-h-screen bg-gray-900 text-gray-200 py-14 px-6">
-        <div className="max-w-7xl mx-auto">
+      <section className="min-h-screen bg-white text-gray-800 px-6 py-16">
+        <div className="max-w-6xl mx-auto">
           {/* Header */}
-          <header className="text-center mb-12">
-            <h1 className="text-5xl font-extrabold tracking-tight text-white drop-shadow-lg">
+          <div className="text-center mb-14">
+            <h2 className="text-4xl md:text-5xl font-bold tracking-wide text-gray-900">
               🔥 Hot Products Just For You
-            </h1>
-            <p className="mt-3 max-w-xl mx-auto text-lg text-gray-400">
-              Discover our exclusive selection of top-rated products. Quality meets style!
+            </h2>
+            <p className="mt-4 text-gray-600 text-lg">
+              Discover top-rated picks curated for your comfort and style.
             </p>
-            <div className="mt-6 mx-auto w-20 h-1 rounded-full bg-indigo-500 shadow-lg"></div>
-          </header>
+            <div className="w-16 h-1 bg-indigo-500 mx-auto mt-6 rounded-full" />
+          </div>
 
-          {/* Content */}
+          {/* Loading/Error States */}
           {loading && (
-            <p className="text-center text-indigo-400 text-xl animate-pulse">
+            <p className="text-center text-indigo-500 text-xl animate-pulse">
               Loading products...
             </p>
           )}
 
           {!loading && !error && products.length === 0 && (
-            <p className="text-center italic text-gray-500">No products available.</p>
+            <p className="text-center italic text-gray-400">No products available.</p>
           )}
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10">
+          {/* Product Grid */}
+          <div className="grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
             {products.map((product, i) => (
               <div
                 key={product._id}
-                className="bg-gray-800 rounded-3xl p-6 shadow-lg shadow-indigo-700/30 hover:shadow-indigo-700/60
-                           transform transition duration-400 hover:scale-[1.05] cursor-pointer"
+                className="bg-white border border-gray-200 p-5 rounded-2xl shadow hover:shadow-lg 
+                transform transition duration-300 hover:scale-[1.03]"
                 style={{
                   animation: `fadeInUp 0.5s ease forwards`,
                   animationDelay: `${i * 0.12}s`,
-                  willChange: 'transform, box-shadow',
+                  willChange: 'transform, opacity',
                 }}
               >
                 <ProductCard product={product} />
@@ -58,12 +57,12 @@ const ProductList = () => {
           </div>
         </div>
 
-        {/* Custom fadeInUp animation */}
+        {/* Animation */}
         <style>{`
           @keyframes fadeInUp {
             0% {
               opacity: 0;
-              transform: translateY(30px);
+              transform: translateY(20px);
             }
             100% {
               opacity: 1;
