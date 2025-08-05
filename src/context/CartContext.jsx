@@ -47,12 +47,11 @@ const addToCart = async (product) => {
       return;
     }
 
-    // Construct payload as per backend spec
     const cartPayload = {
       userId: user._id,
       items: [
         {
-          productId: product._id,
+          productId: product._id || product.id,
           name: product.title || product.name || 'Unnamed',
           price: product.price || 0,
           imageUrl: product.imageUrl || '',
@@ -60,18 +59,21 @@ const addToCart = async (product) => {
         },
       ],
     };
-console.log('Add to cart payload:', cartPayload);
+
+    console.log('✅ Sending to backend:', cartPayload);
 
     const res = await axios.post(
       'http://localhost:5005/api/cart/add',
       cartPayload,
       getConfig()
     );
-    setCart(res.data.cart?.items || []);  // your controller returns cart in "cart"
+
+    setCart(res.data.cart?.items || []);
   } catch (err) {
-    console.error('Error adding to cart:', err);
+    console.error('🚨 Error adding to cart:', err?.response?.data || err.message);
   }
 };
+
 
 const removeFromCart = async (productId) => {
   try {

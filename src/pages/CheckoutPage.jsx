@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import OrderSuccessModal from './OrderSuccessModal'; // import the modal
+import OrderSuccessModal from './OrderSuccessModal';
 
 const CheckoutPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { cart, total } = location.state || { cart: [], total: 0 };
+  const { cart = [], total = 0 } = location.state || {};
 
   const [showModal, setShowModal] = useState(false);
   const [formData, setFormData] = useState({
@@ -36,7 +36,7 @@ const CheckoutPage = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
@@ -48,14 +48,21 @@ const CheckoutPage = () => {
       const token = localStorage.getItem('token');
       if (!token) throw new Error('User not authenticated');
 
+      // Construct order data with productId, quantity, price
+      const items = cart.map((item) => ({
+        productId: item.productId || item._id || item.id,
+        quantity: item.quantity ?? 1,
+        price: item.price ?? 10,
+      }));
+
       const orderData = {
-        items: cart,
+        items,
         total,
         shippingDetails: formData,
         paymentMethod: formData.paymentMethod,
       };
 
-      const res = await axios.post('http://localhost:7000/api/pay', orderData, {
+      const res = await axios.post('http://localhost:7000/api/pay/pay', orderData, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -72,10 +79,9 @@ const CheckoutPage = () => {
     }
   };
 
-  // Called when modal closes: navigate to orders or wherever you want
   const handleModalClose = () => {
     setShowModal(false);
-    navigate('/orders'); // or '/products' or wherever
+    navigate('/orders');
   };
 
   return (

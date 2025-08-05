@@ -1,5 +1,5 @@
 import React from 'react';
-import { addToCart as sendToCartAPI } from '../services/cartApi';
+// import { addToCart as sendToCartAPI } from '../services/cartApi';
 import { useAuth } from '../context/authContext';
 import { useCart } from '../context/CartContext';
 import { useNavigate } from 'react-router-dom';
@@ -9,36 +9,22 @@ const ProductCard = ({ product }) => {
   const { addToCart: updateCartContext } = useCart();
   const navigate = useNavigate();
 
-  const handleAddToCart = async () => {
-    if (!user?._id) {
-      alert('Please login to add items to your cart.');
-      return;
-    }
+const handleAddToCart = async () => {
+  if (!user?._id) {
+    alert('Please login to add items to your cart.');
+    return;
+  }
+  
+  try {
+    await updateCartContext(product);  // pass full product here
+    alert('Item added to cart!');
+    navigate('/cart');
+  } catch (error) {
+    console.error('Failed to add item to cart:', error);
+    alert('Something went wrong while adding to cart.');
+  }
+};
 
-    const cartItem = {
-      productId: product._id,
-      name: product.title || product.name || 'Unnamed',
-      price: product.price || 0,
-      imageUrl: product.imageUrl || '',
-      quantity: 1,
-    };
-
-    const cartPayload = {
-      userId: user._id,
-      items: [cartItem],
-    };
-
-    try {
-      console.log('Sending cart data:', cartPayload);
-      await sendToCartAPI(cartPayload);           // API call
-      updateCartContext(cartItem);                // Update context
-      alert('Item added to cart!');
-      navigate('/cart');
-    } catch (error) {
-      console.error('Failed to add item to cart:', error);
-      alert('Something went wrong while adding to cart.');
-    }
-  };
 
   return (
     <div className="border rounded-2xl p-4 w-full max-w-sm shadow-xl bg-white flex flex-col items-center hover:shadow-2xl transition">
