@@ -11,17 +11,30 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // Helper: Save token & broadcast auth event for cross-tab sync
+  const saveToken = (token) => {
+    localStorage.setItem('token', token);
+    localStorage.setItem('auth-event', 'login');
+  };
+
+  // Helper: Clear token & broadcast logout event
+  const clearToken = () => {
+    localStorage.removeItem('token');
+    localStorage.setItem('auth-event', 'logout');
+  };
+
   // 🔐 LOGIN
   const login = async (credentials) => {
     setLoading(true);
     try {
+      // 1) Call login API to get token
       const res = await authAPI.login(credentials);
       const { token } = res.data;
 
-      localStorage.setItem('token', token);
-      localStorage.setItem('auth-event', 'login');
+      // 2) Save token to localStorage
+      saveToken(token);
 
-      // ✅ Immediately fetch current user
+      // 3) Use token to get full user info (make sure authAPI.getCurrentUser sends token in header)
       const userRes = await authAPI.getCurrentUser();
       setUser(userRes.data);
 
@@ -36,25 +49,20 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // 📝 REGISTER
+  // 📝 REGISTER (NO getCurrentUser call here)
   const register = async (userData) => {
     setLoading(true);
     try {
-      const res = await authAPI.register(userData);
-      const { token } = res.data;
+      await authAPI.register(userData);
 
-      localStorage.setItem('token', token);
-      localStorage.setItem('auth-event', 'login');
+      // No token or current user fetch here
+      setUser(null);
 
-      // ✅ Immediately fetch current user
-      const userRes = await authAPI.getCurrentUser();
-      setUser(userRes.data);
-
-      toast.success(`Registration successful. Welcome, ${userRes.data.name || 'User'}!`);
-      return userRes.data;
+      toast.success('Registration successful! Please login to continue.');
+      return null;
     } catch (error) {
       setUser(null);
-      toast.error(error.response?.data?.message || 'Registration failed. Please try again.');
+      // toast.error(error.response?.data?.message || 'Registration failed. Please try again.');
       throw error;
     } finally {
       setLoading(false);
@@ -70,14 +78,13 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       toast.error('Logout failed. Please try again.');
     } finally {
-      localStorage.removeItem('token');
-      localStorage.setItem('auth-event', 'logout');
+      clearToken();
       setUser(null);
       setLoading(false);
     }
   };
 
-  // 🔁 RESTORE SESSION
+  // 🔁 RESTORE SESSION on page reload
   useEffect(() => {
     const restoreSession = async () => {
       const token = localStorage.getItem('token');
@@ -92,7 +99,7 @@ export const AuthProvider = ({ children }) => {
         setUser(res.data);
       } catch (err) {
         setUser(null);
-        localStorage.removeItem('token');
+        clearToken();
       } finally {
         setLoading(false);
       }
@@ -101,7 +108,7 @@ export const AuthProvider = ({ children }) => {
     restoreSession();
   }, []);
 
-  // 🌐 CROSS-TAB Sync
+  // 🌐 CROSS-TAB LOGIN/LOGOUT sync: reload tab when another tab logs in/out
   useEffect(() => {
     const handleStorage = (e) => {
       if (e.key === 'auth-event') {

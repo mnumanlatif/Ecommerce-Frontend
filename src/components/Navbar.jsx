@@ -1,17 +1,19 @@
-import React, { useEffect, useState } from 'react';
+/* eslint-disable no-unused-vars */
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, { useEffect} from 'react';
 import { useAuth } from '../context/authContext';
 import { useNavigate, Link } from 'react-router-dom';
 import { ShoppingCart, PackageSearch } from 'lucide-react';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
-
+import { useCart } from '../context/CartContext';  // <-- import cart context
 const Navbar = () => {
   const { t, i18n } = useTranslation();
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-  const [cartCount, setCartCount] = useState(0);
-
+  // const [setCartCount] = useState(0);
+ const { cartCount } = useCart();  // <-- use cartCount from context
   useEffect(() => {
     const fetchCartQuantity = async () => {
       try {
@@ -28,11 +30,11 @@ const Navbar = () => {
           }
         );
 
-        const cartItems = res.data.items || [];
-        setCartCount(cartItems.length);
+        // const cartItems = res.data.items || [];
+        // setCartCount(cartItems.length);
       } catch (err) {
         console.error('Failed to fetch cart count:', err.message);
-        setCartCount(0);
+        // setCartCount(0);
       }
     };
 
@@ -46,7 +48,6 @@ const Navbar = () => {
   const handleLogout = async () => {
     try {
       await logout();
-      // toast.success(t('Logged out successfully'));
       navigate('/login');
     } catch (error) {
       toast.error(t('Logout failed'));
@@ -59,50 +60,62 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-8 py-4 shadow-md flex items-center justify-between">
-      <Link to="/products" className="text-2xl font-bold tracking-wide">
-        🛒 {t('catalog')}
+    <nav className="bg-gradient-to-r from-indigo-900 to-slate-900 bg-opacity-95 backdrop-blur-sm shadow-md px-6 md:px-12 py-4 flex items-center justify-between sticky top-0 z-50 text-white">
+  <Link to="/products" className="text-3xl font-bold tracking-wider text-white hover:text-violet-300 transition duration-300">
+    🛒 {t('catalog')}
+  </Link>
+
+  <div className="flex items-center gap-x-6">
+    <Link
+      to="/products"
+      className="flex items-center gap-2 hover:text-violet-300 transition duration-300"
+    >
+      <PackageSearch className="w-5 h-5" />
+      <span className="font-medium text-lg">{t('Products')}</span>
+    </Link>
+
+    <Link
+      to="/cart"
+      className="relative flex items-center gap-2 hover:text-violet-300 transition duration-300"
+      aria-label="View cart"
+    >
+      <ShoppingCart className="w-5 h-5" />
+      <span className="font-medium text-lg">{t('cart')}</span>
+      {cartCount > 0 && (
+        <span className="absolute -top-2 -right-3 bg-violet-600 text-white text-[11px] font-semibold px-2 py-0.5 rounded-full shadow-lg animate-bounce">
+          {cartCount}
+        </span>
+      )}
+    </Link>
+
+    <select
+      onChange={(e) => changeLanguage(e.target.value)}
+      value={i18n.language}
+      className="bg-slate-800 text-white text-sm px-3 py-1.5 rounded-lg shadow-inner border border-slate-600 focus:outline-none focus:ring-2 focus:ring-violet-500 transition"
+    >
+      <option value="en">English</option>
+      <option value="ur">اردو</option>
+      <option value="es">Español</option>
+    </select>
+
+    {user ? (
+      <button
+        onClick={handleLogout}
+        className="bg-violet-700 hover:bg-violet-600 text-white font-semibold px-5 py-2 rounded-full shadow-md transition duration-300 hover:scale-105"
+      >
+        {t('logout')}
+      </button>
+    ) : (
+      <Link
+        to="/login"
+        className="bg-violet-700 hover:bg-violet-600 text-white font-semibold px-5 py-2 rounded-full shadow-md transition duration-300 hover:scale-105"
+      >
+        {t('login')}
       </Link>
+    )}
+  </div>
+</nav>
 
-      <div className="flex items-center space-x-6">
-        <Link to="/products" className="flex items-center relative hover:text-gray-200">
-          <PackageSearch className="w-5 h-5" />
-          <span className="ml-1">{t('Products')}</span>
-        </Link>
-
-        <Link to="/cart" className="flex items-center relative hover:text-gray-200">
-          <ShoppingCart className="w-5 h-5" />
-          <span className="ml-1">{t('cart')}</span>
-          {cartCount > 0 && (
-            <span className="absolute -top-3 -right-3 bg-red-600 text-white text-xs font-bold px-2 py-0.5 rounded-full">
-              {cartCount}
-            </span>
-          )}
-        </Link>
-
-        <label className="flex items-center space-x-2 text-white">
-          <span className="text-sm hidden sm:inline">🌐</span>
-          <select
-            onChange={(e) => changeLanguage(e.target.value)}
-            className="bg-white text-indigo-600 px-2 py-1 rounded-md"
-            defaultValue={i18n.language}
-          >
-            <option value="en">English</option>
-            <option value="ur">اردو</option>
-            <option value="es">Español</option>
-          </select>
-        </label>
-
-        {user && (
-          <button
-            onClick={handleLogout}
-            className="bg-white text-indigo-600 px-4 py-1 rounded-md hover:bg-gray-100 transition"
-          >
-            {t('logout')}
-          </button>
-        )}
-      </div>
-    </nav>
   );
 };
 

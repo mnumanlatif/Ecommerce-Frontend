@@ -2,29 +2,25 @@ import React from 'react';
 import { FaWhatsapp } from 'react-icons/fa';
 
 const WhatsappButton = () => {
-  // Use international format without "+" and leading zero (92 for Pakistan)
   const phoneNumber = '923464080360';
-  const message = encodeURIComponent('Hello! I’d like to get in touch with you.');
-  const whatsappUrl = `https://wa.me/${phoneNumber}?text=${message}`;
+  const message = "Hello! I’d like to get in touch with you.";
+
+  const openWhatsapp = () => {
+    const encodedMessage = encodeURIComponent(message);
+    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
+    window.open(whatsappUrl, '_blank');
+  };
 
   return (
-    <div className="group fixed bottom-6 right-6 z-50">
-      <a
-        href={whatsappUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="bg-green-500 hover:bg-green-600 text-white rounded-full p-4 shadow-lg flex items-center justify-center transition-transform hover:scale-110"
+    <div className="fixed bottom-6 right-6 z-50">
+      <button
+        onClick={openWhatsapp}
+        className="bg-green-500 hover:bg-green-600 text-white rounded-full p-4 shadow-lg hover:shadow-2xl transition-transform hover:scale-110 focus:outline-none focus:ring-4 focus:ring-green-400"
         title="Chat on WhatsApp"
         aria-label="Chat with us on WhatsApp"
       >
         <FaWhatsapp size={28} />
-      </a>
-      <span
-        role="tooltip"
-        className="absolute bottom-16 right-1/2 translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black text-white text-sm px-3 py-1 rounded-md whitespace-nowrap shadow-md"
-      >
-        Chat with us on WhatsApp
-      </span>
+      </button>
     </div>
   );
 };

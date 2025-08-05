@@ -34,7 +34,7 @@ export const CartProvider = ({ children }) => {
       } catch (err) {
         console.error('Error fetching cart:', err);
         setCart([]);
-        toast.error('Failed to load cart items.');
+        // toast.error('Failed to load cart items.');
       }
     };
 
@@ -78,26 +78,33 @@ export const CartProvider = ({ children }) => {
     }
   };
 
-  const removeFromCart = async (productId) => {
-    try {
-      if (!user?._id) {
-        toast.warning('Please login to remove items from your cart.');
-        return;
-      }
-
-      await axios.post(
-        'http://localhost:5005/api/cart/remove',
-        { userId: user._id, productId },
-        getConfig()
-      );
-
-      setCart((prev) => prev.filter((item) => item.productId !== productId));
-      toast.info('Item removed from cart.');
-    } catch (err) {
-      console.error('Error removing from cart:', err);
-      toast.error('Failed to remove item from cart.');
+const removeFromCart = async (productId) => {
+  try {
+    if (!user?._id) {
+      toast.warning('Please login to remove items from your cart.');
+      return;
     }
-  };
+
+    await axios.post(
+      'http://localhost:5005/api/cart/remove',
+      { userId: user._id, productId },
+      getConfig()
+    );
+
+    // ✅ Re-fetch the updated cart
+    const res = await axios.get(
+      `http://localhost:5005/api/cart/cart?userId=${user._id}`,
+      getConfig()
+    );
+    setCart(res.data.items || []);
+
+    toast.info('Item removed from cart.');
+  } catch (err) {
+    console.error('Error removing from cart:', err);
+    toast.error('Failed to remove item from cart.');
+  }
+};
+
 
   // Update quantity
   const updateQuantity = async (productId, quantity) => {

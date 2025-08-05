@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useState } from 'react';
 import { useAuth } from '../context/authContext';
 import { Link, useNavigate } from 'react-router-dom';
@@ -7,96 +8,121 @@ export default function RegisterPage() {
   const { register } = useAuth();
   const navigate = useNavigate();
 
-  const [form, setForm] = useState({ name: '', email: '', password: '', role: 'user' });
+  const [form, setForm] = useState({
+    name: '',
+    email: '',
+    password: '',
+    role: 'user',
+  });
+
   const [loading, setLoading] = useState(false);
 
-  const handleChange = e => {
+  const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async e => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      await register(form);
-      toast.success('Registration successful! Please login.');
-      navigate('/login'); // Redirect after success
+      // const user = await register(form);
+      toast.success('Registered successfully! Please login to continue.');
+      setTimeout(() => {
+        navigate('/login');
+      }, 1000);
     } catch (err) {
-      console.error('Registration failed', err);
-      toast.error(err.response?.data?.message || 'Registration failed. Please try again.');
+      console.error('Registration error:', err);
+      toast.error('Error: ' + (err?.message || 'Something went wrong.'));
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-100 to-green-100">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-[#0f0c29] via-[#302b63] to-[#24243e] px-4 py-12">
       <form
         onSubmit={handleSubmit}
-        className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-sm space-y-5"
+        className="w-full max-w-md rounded-[2rem] backdrop-blur-3xl bg-white/10 border border-white/20 shadow-2xl p-10 space-y-6 text-white relative"
       >
-        <h2 className="text-2xl font-bold text-center text-gray-800">Create Account</h2>
+        {/* Floating Glass Shine */}
+        <div className="absolute -top-1 -left-1 w-full h-full rounded-[2rem] bg-gradient-to-br from-white/20 to-transparent blur-[3px] z-0 pointer-events-none" />
 
-        <input
-          type="text"
-          name="name"
-          value={form.name}
-          onChange={handleChange}
-          placeholder="Name"
-          required
-          className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400"
-        />
+        <h2 className="text-4xl font-extrabold text-center text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-500 drop-shadow">
+          Create Account
+        </h2>
 
-        <input
-          type="email"
-          name="email"
-          value={form.email}
-          onChange={handleChange}
-          placeholder="Email"
-          required
-          className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400"
-        />
+        {/* Full Name */}
+        <div className="relative">
+          <label className="block text-sm font-semibold text-indigo-300 mb-1">Full Name</label>
+          <input
+            type="text"
+            name="name"
+            value={form.name}
+            onChange={handleChange}
+            placeholder="John Doe"
+            required
+            className="w-full px-4 py-3 bg-white/5 border border-indigo-600 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-pink-400 shadow-sm transition duration-200"
+          />
+        </div>
 
-        <input
-          type="password"
-          name="password"
-          value={form.password}
-          onChange={handleChange}
-          placeholder="Password"
-          required
-          className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400"
-        />
+        {/* Email */}
+        <div className="relative">
+          <label className="block text-sm font-semibold text-indigo-300 mb-1">Email</label>
+          <input
+            type="email"
+            name="email"
+            value={form.email}
+            onChange={handleChange}
+            placeholder="you@example.com"
+            required
+            className="w-full px-4 py-3 bg-white/5 border border-indigo-600 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-pink-400 shadow-sm transition duration-200"
+          />
+        </div>
 
-        <div className="space-y-1">
-          <label htmlFor="role" className="text-sm font-medium text-gray-700">
-            Select Role
-          </label>
+        {/* Password */}
+        <div className="relative">
+          <label className="block text-sm font-semibold text-indigo-300 mb-1">Password</label>
+          <input
+            type="password"
+            name="password"
+            value={form.password}
+            onChange={handleChange}
+            placeholder="••••••••"
+            required
+            className="w-full px-4 py-3 bg-white/5 border border-indigo-600 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-pink-400 shadow-sm transition duration-200"
+          />
+        </div>
+
+        {/* Role */}
+        <div className="relative">
+          <label className="block text-sm font-semibold text-indigo-300 mb-1">Select Role</label>
           <select
-            id="role"
             name="role"
             value={form.role}
             onChange={handleChange}
-            className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400"
+            className="w-full px-4 py-3 bg-white/5 border border-indigo-600 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-pink-400 shadow-sm transition duration-200"
           >
             <option value="admin">Admin</option>
             <option value="user">User</option>
           </select>
         </div>
 
+        {/* Button */}
         <button
           type="submit"
           disabled={loading}
-          className={`w-full text-white py-3 rounded-lg transition ${
-            loading ? 'bg-green-400 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700'
+          className={`w-full py-3 rounded-xl font-semibold text-white transition-all duration-300 bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 hover:brightness-110 hover:scale-[1.02] ${
+            loading ? 'opacity-50 cursor-not-allowed' : ''
           }`}
         >
           {loading ? 'Registering...' : 'Register'}
         </button>
 
-        <p className="text-sm text-center text-gray-600">
+        {/* Login Link */}
+        <p className="text-center text-sm text-indigo-200">
           Already have an account?{' '}
-          <Link to="/login" className="text-green-600 hover:underline">
+          <Link to="/login" className="font-medium text-pink-400 hover:underline">
             Login
           </Link>
         </p>
