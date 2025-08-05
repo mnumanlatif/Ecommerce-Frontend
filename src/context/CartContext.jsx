@@ -2,6 +2,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import axios from 'axios';
 import { useAuth } from '../context/authContext';
+import { toast } from 'react-toastify';  // import toastify
 
 const CartContext = createContext();
 export const useCart = () => useContext(CartContext);
@@ -33,6 +34,7 @@ export const CartProvider = ({ children }) => {
       } catch (err) {
         console.error('Error fetching cart:', err);
         setCart([]);
+        toast.error('Failed to load cart items.');
       }
     };
 
@@ -40,60 +42,62 @@ export const CartProvider = ({ children }) => {
   }, [user]);
 
   // Add item to cart
-const addToCart = async (product) => {
-  try {
-    if (!user?._id) {
-      console.warn('User not logged in');
-      return;
+  const addToCart = async (product) => {
+    try {
+      if (!user?._id) {
+        toast.warning('Please login to add items to your cart.');
+        return;
+      }
+
+      const cartPayload = {
+        userId: user._id,
+        items: [
+          {
+            productId: product._id || product.id,
+            name: product.title || product.name || 'Unnamed',
+            price: product.price || 0,
+            imageUrl: product.imageUrl || '',
+            quantity: 1,
+          },
+        ],
+      };
+
+      console.log('✅ Sending to backend:', cartPayload);
+
+      const res = await axios.post(
+        'http://localhost:5005/api/cart/add',
+        cartPayload,
+        getConfig()
+      );
+
+      setCart(res.data.cart?.items || []);
+      // toast.success('Item added to cart!');
+    } catch (err) {
+      console.error('🚨 Error adding to cart:', err?.response?.data || err.message);
+      toast.error('Failed to add item to cart.');
     }
+  };
 
-    const cartPayload = {
-      userId: user._id,
-      items: [
-        {
-          productId: product._id || product.id,
-          name: product.title || product.name || 'Unnamed',
-          price: product.price || 0,
-          imageUrl: product.imageUrl || '',
-          quantity: 1,
-        },
-      ],
-    };
+  const removeFromCart = async (productId) => {
+    try {
+      if (!user?._id) {
+        toast.warning('Please login to remove items from your cart.');
+        return;
+      }
 
-    console.log('✅ Sending to backend:', cartPayload);
+      await axios.post(
+        'http://localhost:5005/api/cart/remove',
+        { userId: user._id, productId },
+        getConfig()
+      );
 
-    const res = await axios.post(
-      'http://localhost:5005/api/cart/add',
-      cartPayload,
-      getConfig()
-    );
-
-    setCart(res.data.cart?.items || []);
-  } catch (err) {
-    console.error('🚨 Error adding to cart:', err?.response?.data || err.message);
-  }
-};
-
-
-const removeFromCart = async (productId) => {
-  try {
-    if (!user?._id) {
-      console.warn('User not logged in');
-      return;
+      setCart((prev) => prev.filter((item) => item.productId !== productId));
+      toast.info('Item removed from cart.');
+    } catch (err) {
+      console.error('Error removing from cart:', err);
+      toast.error('Failed to remove item from cart.');
     }
-
-    await axios.post(
-      'http://localhost:5005/api/cart/remove',
-      { userId: user._id, productId },
-      getConfig()
-    );
-
-    setCart((prev) => prev.filter((item) => item.productId !== productId));
-  } catch (err) {
-    console.error('Error removing from cart:', err);
-  }
-};
-
+  };
 
   // Update quantity
   const updateQuantity = async (productId, quantity) => {
@@ -104,8 +108,10 @@ const removeFromCart = async (productId) => {
         getConfig()
       );
       setCart(res.data.items || []);
+      toast.success('Cart updated.');
     } catch (err) {
       console.error('Error updating quantity:', err);
+      toast.error('Failed to update cart.');
     }
   };
 

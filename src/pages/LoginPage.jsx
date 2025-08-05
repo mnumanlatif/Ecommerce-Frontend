@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/authContext';
 import { Link, useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 export default function LoginPage() {
   const { login } = useAuth();
@@ -8,27 +9,26 @@ export default function LoginPage() {
 
   const [form, setForm] = useState({ email: '', password: '' });
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
-    setError('');
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError('');
 
     try {
       const user = await login({ email: form.email, password: form.password });
       console.log('Logged in user:', user);
 
       if (!user || !user.role) {
-        setError('Login failed: User role missing.');
+        toast.error('Login failed: User role missing.');
         setLoading(false);
         return;
       }
+
+      // toast.success('Login successful! ');
 
       // Navigate to the correct page
       if (user.role === 'admin') {
@@ -37,13 +37,13 @@ export default function LoginPage() {
         navigate('/products');
       }
 
-      // Soft reload the page after navigation
-      setTimeout(() => {
-        window.location.replace(window.location.pathname);
-      }, 50); // Delay ensures navigate completes
+      // Soft reload after navigation
+      // setTimeout(() => {
+      //   window.location.replace(window.location.pathname);
+      // }, 50);
     } catch (err) {
       console.error('Login failed', err);
-      setError('Invalid email or password.');
+      toast.error('Invalid email or password.');
     } finally {
       setLoading(false);
     }
@@ -56,12 +56,6 @@ export default function LoginPage() {
         className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-sm space-y-5"
       >
         <h2 className="text-2xl font-bold text-center text-gray-800">Sign In</h2>
-
-        {error && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded text-sm">
-            {error}
-          </div>
-        )}
 
         <input
           type="email"

@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../context/authContext';
 import { useNavigate, Link } from 'react-router-dom';
-import { ShoppingCart } from 'lucide-react';
+import { ShoppingCart, PackageSearch } from 'lucide-react';
 import axios from 'axios';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'react-toastify';
 
 const Navbar = () => {
   const { t, i18n } = useTranslation();
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-  const [cartCount, setCartCount] = useState(null);
+  const [cartCount, setCartCount] = useState(0);
 
   useEffect(() => {
     const fetchCartQuantity = async () => {
@@ -39,12 +40,18 @@ const Navbar = () => {
   }, [user]);
 
   useEffect(() => {
-  document.documentElement.dir = i18n.language === 'ur' ? 'rtl' : 'ltr';
-}, [i18n.language]);
+    document.documentElement.dir = i18n.language === 'ur' ? 'rtl' : 'ltr';
+  }, [i18n.language]);
 
   const handleLogout = async () => {
-    await logout();
-    navigate('/login');
+    try {
+      await logout();
+      // toast.success(t('Logged out successfully'));
+      navigate('/login');
+    } catch (error) {
+      toast.error(t('Logout failed'));
+      console.error('Logout error:', error);
+    }
   };
 
   const changeLanguage = (lang) => {
@@ -53,11 +60,16 @@ const Navbar = () => {
 
   return (
     <nav className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-8 py-4 shadow-md flex items-center justify-between">
-      <Link to="/products" className="text-2xl font-bold tracking-wide hover:underline">
+      <Link to="/products" className="text-2xl font-bold tracking-wide">
         🛒 {t('catalog')}
       </Link>
 
       <div className="flex items-center space-x-6">
+        <Link to="/products" className="flex items-center relative hover:text-gray-200">
+          <PackageSearch className="w-5 h-5" />
+          <span className="ml-1">{t('Products')}</span>
+        </Link>
+
         <Link to="/cart" className="flex items-center relative hover:text-gray-200">
           <ShoppingCart className="w-5 h-5" />
           <span className="ml-1">{t('cart')}</span>
@@ -68,19 +80,18 @@ const Navbar = () => {
           )}
         </Link>
 
-<label className="flex items-center space-x-2 text-white">
-  <span className="text-sm hidden sm:inline">🌐</span>
-  <select
-    onChange={(e) => changeLanguage(e.target.value)}
-    className="bg-white text-indigo-600 px-2 py-1 rounded-md"
-    defaultValue={i18n.language}
-  >
-    <option value="en">English</option>
-    <option value="ur">اردو</option>
-    <option value="es">Español</option>
-  </select>
-</label>
-
+        <label className="flex items-center space-x-2 text-white">
+          <span className="text-sm hidden sm:inline">🌐</span>
+          <select
+            onChange={(e) => changeLanguage(e.target.value)}
+            className="bg-white text-indigo-600 px-2 py-1 rounded-md"
+            defaultValue={i18n.language}
+          >
+            <option value="en">English</option>
+            <option value="ur">اردو</option>
+            <option value="es">Español</option>
+          </select>
+        </label>
 
         {user && (
           <button

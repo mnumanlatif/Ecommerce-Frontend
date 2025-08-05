@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import productService from '../services/productApi';
+import { toast } from 'react-toastify';
 
 export default function useProducts() {
   const [products, setProducts] = useState([]);
@@ -14,7 +15,9 @@ export default function useProducts() {
         setLoading(false);
       })
       .catch((err) => {
-        setError(err.message || 'Unknown error');
+        const errMsg = err.message || 'Unknown error';
+        setError(errMsg);
+        toast.error(`Failed to load products: ${errMsg}`);
         setLoading(false);
       });
   }, []);

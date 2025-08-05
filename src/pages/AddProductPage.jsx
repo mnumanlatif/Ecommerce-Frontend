@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 export default function AddProductPage() {
   const navigate = useNavigate();
@@ -13,27 +14,23 @@ export default function AddProductPage() {
   });
 
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState('');
 
   const handleChange = (e) => {
     setProduct({ ...product, [e.target.name]: e.target.value });
-    setMessage('');
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setMessage('');
 
     try {
-      // eslint-disable-next-line no-unused-vars
-      const response = await axios.post('http://localhost:5002/api/products', product);
-      setMessage('Product added successfully!');
+      await axios.post('http://localhost:5002/api/products', product);
+      toast.success('Product added successfully!');
       setProduct({ title: '', description: '', price: '', imageUrl: '' });
       setTimeout(() => navigate('/'), 2000); // redirect after delay
     } catch (error) {
       console.error(error);
-      setMessage(error.response?.data?.message || 'Something went wrong');
+      toast.error(error.response?.data?.message || 'Something went wrong');
     } finally {
       setLoading(false);
     }
@@ -46,16 +43,6 @@ export default function AddProductPage() {
         className="w-full max-w-xl bg-white shadow-xl p-8 rounded-2xl space-y-5"
       >
         <h2 className="text-2xl font-bold text-center text-gray-800">Add New Product</h2>
-
-        {message && (
-          <div
-            className={`text-sm px-4 py-2 rounded text-center ${
-              message.includes('success') ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-700'
-            }`}
-          >
-            {message}
-          </div>
-        )}
 
         <input
           type="text"

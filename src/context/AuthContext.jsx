@@ -1,7 +1,8 @@
-/* eslint-disable no-unused-vars */
 /* eslint-disable react-refresh/only-export-components */
+/* eslint-disable no-unused-vars */
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import * as authAPI from '../services/authApi';
+import { toast } from 'react-toastify';
 
 const AuthContext = createContext();
 export const useAuth = () => useContext(AuthContext);
@@ -15,21 +16,20 @@ export const AuthProvider = ({ children }) => {
     setLoading(true);
     try {
       const res = await authAPI.login(credentials);
-      const { token, user: userData } = res.data;
+      const { token } = res.data;
 
-      // ✅ DEBUG: Check if role exists
-      if (!userData?.role) {
-        console.warn('User role missing in login response. Role-based redirects may not work.');
-      }
-
-      // Store token and sync login event
       localStorage.setItem('token', token);
       localStorage.setItem('auth-event', 'login');
 
-      setUser(userData); // Should contain role
-      return userData;
+      // ✅ Immediately fetch current user
+      const userRes = await authAPI.getCurrentUser();
+      setUser(userRes.data);
+
+      toast.success(`Welcome back, ${userRes.data.name || 'User'}!`);
+      return userRes.data;
     } catch (error) {
       setUser(null);
+      toast.error(error.response?.data?.message || 'Login failed. Please check your credentials.');
       throw error;
     } finally {
       setLoading(false);
@@ -41,15 +41,20 @@ export const AuthProvider = ({ children }) => {
     setLoading(true);
     try {
       const res = await authAPI.register(userData);
-      const { token, user } = res.data;
+      const { token } = res.data;
 
       localStorage.setItem('token', token);
       localStorage.setItem('auth-event', 'login');
 
-      setUser(user); // Should contain role
-      return user;
+      // ✅ Immediately fetch current user
+      const userRes = await authAPI.getCurrentUser();
+      setUser(userRes.data);
+
+      toast.success(`Registration successful. Welcome, ${userRes.data.name || 'User'}!`);
+      return userRes.data;
     } catch (error) {
       setUser(null);
+      toast.error(error.response?.data?.message || 'Registration failed. Please try again.');
       throw error;
     } finally {
       setLoading(false);
@@ -61,8 +66,9 @@ export const AuthProvider = ({ children }) => {
     setLoading(true);
     try {
       await authAPI.logout();
+      toast.info('You have been logged out.');
     } catch (error) {
-      console.error('Logout failed:', error);
+      toast.error('Logout failed. Please try again.');
     } finally {
       localStorage.removeItem('token');
       localStorage.setItem('auth-event', 'logout');
@@ -71,7 +77,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // 🔁 RESTORE SESSION on reload
+  // 🔁 RESTORE SESSION
   useEffect(() => {
     const restoreSession = async () => {
       const token = localStorage.getItem('token');
@@ -83,13 +89,7 @@ export const AuthProvider = ({ children }) => {
 
       try {
         const res = await authAPI.getCurrentUser();
-        const userData = res.data;
-
-        if (!userData?.role) {
-          console.warn('User role missing in session restore. Role-based redirects may fail.');
-        }
-
-        setUser(userData); // Should contain .role
+        setUser(res.data);
       } catch (err) {
         setUser(null);
         localStorage.removeItem('token');
@@ -101,7 +101,7 @@ export const AuthProvider = ({ children }) => {
     restoreSession();
   }, []);
 
-  // 🌐 CROSS-TAB login/logout sync
+  // 🌐 CROSS-TAB Sync
   useEffect(() => {
     const handleStorage = (e) => {
       if (e.key === 'auth-event') {

@@ -1,13 +1,17 @@
 import React, { useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
 
 export default function OrderSuccessModal({ onClose }) {
   const [animate, setAnimate] = useState(false);
 
   useEffect(() => {
+    // Show toast success message when modal mounts
+    toast.success('Order completed successfully! Thank you for your purchase.');
+
     // Trigger animation start on mount
     setAnimate(true);
 
-    // Auto close modal after animation (say 4 seconds)
+    // Auto close modal after animation (4 seconds)
     const timer = setTimeout(() => {
       if (onClose) onClose();
     }, 4000);
@@ -58,7 +62,7 @@ export default function OrderSuccessModal({ onClose }) {
               width: '50px',
               height: '50px',
               backgroundImage:
-                "url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS2PwMQg4ljOlCP3MZWD4seqMu8n7d498-saK32qhJGbIBrxj2aKQX32lmE0utGS2m9ods&usqp=CAU')", // sample van/truck icon
+                "url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS2PwMQg4ljOlCP3MZWD4seqMu8n7d498-saK32qhJGbIBrxj2aKQX32lmE0utGS2m9ods&usqp=CAU')",
               backgroundSize: 'contain',
               backgroundRepeat: 'no-repeat',
               transition: 'left 3s ease-in-out',
@@ -68,7 +72,6 @@ export default function OrderSuccessModal({ onClose }) {
         </div>
       </div>
 
-      {/* Add keyframes CSS globally or inside style */}
       <style>
         {`
           @keyframes moveVan {

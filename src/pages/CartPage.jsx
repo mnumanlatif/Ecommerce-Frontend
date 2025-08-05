@@ -3,6 +3,7 @@ import { removeFromCart } from '../services/cartApi';
 import { useAuth } from '../context/authContext';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 const CartPage = () => {
   const { user } = useAuth();
@@ -29,6 +30,7 @@ const CartPage = () => {
       setCart(res.data.items || []);
     } catch (err) {
       console.error('Error fetching cart:', err);
+      toast.error('Failed to fetch cart items.');
     } finally {
       setLoading(false);
     }
@@ -39,8 +41,10 @@ const CartPage = () => {
     try {
       await removeFromCart(user._id, productId);
       setCart((prevCart) => prevCart.filter((item) => item.productId !== productId));
+      toast.success('Item removed from cart.');
     } catch (err) {
       console.error('Error removing item:', err);
+      toast.error('Failed to remove item from cart.');
     }
   };
 

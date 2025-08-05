@@ -1,18 +1,24 @@
 import React from 'react';
 import useProducts from '../hooks/useProducts.jsx';
 import ProductCard from './ProductCard';
-// import Navbar from './Navbar';
 import WhatsappButton from './WhatsappButton';
+import { toast } from 'react-toastify';
+
 const ProductList = () => {
   const { products, loading, error } = useProducts();
 
+  // Show toast notification if error occurs
+  React.useEffect(() => {
+    if (error) {
+      toast.error(`Error: ${error}`);
+    }
+  }, [error]);
+
   return (
     <>
-      {/* <Navbar /> */}
-        <WhatsappButton />
+      <WhatsappButton />
       <div className="p-8">
         {loading && <p className="text-center">Loading products...</p>}
-        {error && <p className="text-center text-red-600">Error: {error}</p>}
         {!loading && !error && products.length === 0 && (
           <p className="text-center">No products available.</p>
         )}

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import OrderSuccessModal from './OrderSuccessModal';
+import { toast } from 'react-toastify';
 
 const CheckoutPage = () => {
   const location = useLocation();
@@ -18,7 +19,6 @@ const CheckoutPage = () => {
     paymentMethod: 'card',
   });
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
 
   if (!cart.length) {
     return (
@@ -42,13 +42,11 @@ const CheckoutPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError('');
 
     try {
       const token = localStorage.getItem('token');
       if (!token) throw new Error('User not authenticated');
 
-      // Construct order data with productId, quantity, price
       const items = cart.map((item) => ({
         productId: item.productId || item._id || item.id,
         quantity: item.quantity ?? 1,
@@ -67,13 +65,14 @@ const CheckoutPage = () => {
       });
 
       if (res.data.success) {
+        toast.success('Order placed successfully!');
         setShowModal(true);
       } else {
-        setError('Payment failed, please try again.');
+        toast.error('Payment failed, please try again.');
       }
     } catch (err) {
       console.error('Order failed:', err);
-      setError(err.response?.data?.message || err.message || 'Failed to place order');
+      toast.error(err.response?.data?.message || err.message || 'Failed to place order');
     } finally {
       setLoading(false);
     }
@@ -90,6 +89,7 @@ const CheckoutPage = () => {
         <h2 className="text-4xl font-extrabold mb-8 text-gray-900 border-b pb-4">Checkout</h2>
 
         <form onSubmit={handleSubmit} className="space-y-8">
+          {/* Form Fields */}
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
             <div className="flex flex-col">
               <label htmlFor="fullName" className="mb-2 font-semibold text-gray-700">
@@ -186,12 +186,6 @@ const CheckoutPage = () => {
               <option value="cod">Cash on Delivery</option>
             </select>
           </div>
-
-          {error && (
-            <p className="text-red-600 font-semibold text-center bg-red-100 rounded p-2">
-              {error}
-            </p>
-          )}
 
           <button
             type="submit"
