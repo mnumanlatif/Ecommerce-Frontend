@@ -1,14 +1,17 @@
+// /* eslint-disable no-undef */
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import OrderSuccessModal from './OrderSuccessModal';
 import { toast } from 'react-toastify';
-
+import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/authContext';
 const CheckoutPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { cart = [], total = 0 } = location.state || {};
-
+  const { clearCart} = useCart();
+  const { user } = useAuth(); 
   const [showModal, setShowModal] = useState(false);
   const [formData, setFormData] = useState({
     fullName: '',
@@ -39,56 +42,54 @@ const CheckoutPage = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setLoading(true);
 
-    try {
-      const token = localStorage.getItem('token')?.replace(/^"(.*)"$/, '$1');
-      if (!token) {
-        toast.error('Please login to proceed with checkout.');
-        navigate('/login');
-        return;
-      }
-
-      const items = cart.map((item) => ({
-        productId: item.productId || item._id || item.id,
-        quantity: item.quantity ?? 1,
-        price: item.price ?? 10,
-      }));
-
-      const orderData = {
-        items,
-        total,
-        shippingDetails: formData,
-        paymentMethod: formData.paymentMethod,
-      };
-
-      const res = await axios.post('http://localhost:7000/api/pay/pay', orderData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (res.data.success) {
-        // toast.success('Order placed successfully!');
-        setShowModal(true);
-      } else {
-        toast.error('Payment failed, please try again.');
-      }
-    } catch (err) {
-      toast.error(err?.response?.data?.message || err.message || 'Failed to place order');
-    } finally {
-      setLoading(false);
+  try {
+    const token = localStorage.getItem('token')?.replace(/^"(.*)"$/, '$1');
+    if (!token) {
+      toast.error('Please login to proceed with checkout.');
+      navigate('/login');
+      return;
     }
-  };
 
+    const items = cart.map((item) => ({
+      productId: item.productId || item._id || item.id,
+      quantity: item.quantity ?? 1,
+      price: item.price ?? 10,
+    }));
+
+    const orderData = {
+      items,
+      total,
+      shippingDetails: formData,
+      paymentMethod: formData.paymentMethod,
+    };
+
+    const res = await axios.post('http://localhost:7000/api/pay/pay', orderData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (res.data.success) {
+      setShowModal(true);
+       await clearCart(user._id); // clear the entire cart at once
+    } else {
+      toast.error('Payment failed, please try again.');
+    }
+  } catch (err) {
+    toast.error(err?.response?.data?.message || err.message || 'Failed to place order');
+  } finally {
+    setLoading(false);
+  }
+};
   const handleModalClose = () => {
     setShowModal(false);
     navigate('/orders');
   };
-
   return (
     <section className="min-h-screen bg-gray-100 text-gray-800 py-14 px-4">
       <div className="max-w-4xl mx-auto bg-white rounded-3xl shadow-xl p-10 border border-gray-200">

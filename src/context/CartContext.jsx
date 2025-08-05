@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable react-refresh/only-export-components */
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import axios from 'axios';
@@ -78,25 +79,26 @@ export const CartProvider = ({ children }) => {
     }
   };
 
-const removeFromCart = async (productId) => {
+const removeFromCart = async (userId, productId) => {
   try {
-    if (!user?._id) {
+    if (!userId) {
       toast.warning('Please login to remove items from your cart.');
       return;
     }
 
     await axios.post(
       'http://localhost:5005/api/cart/remove',
-      { userId: user._id, productId },
+      { userId, productId },
+      getConfig() // your axios config with auth headers etc
+    );
+
+    // Fetch updated cart after removal
+    const res = await axios.get(
+      `http://localhost:5005/api/cart/cart?userId=${userId}`,
       getConfig()
     );
 
-    // ✅ Re-fetch the updated cart
-    const res = await axios.get(
-      `http://localhost:5005/api/cart/cart?userId=${user._id}`,
-      getConfig()
-    );
-    setCart(res.data.items || []);
+    setCart(res.data.items || []);  // Update cart state here
 
     toast.info('Item removed from cart.');
   } catch (err) {
@@ -104,6 +106,7 @@ const removeFromCart = async (productId) => {
     toast.error('Failed to remove item from cart.');
   }
 };
+
 
 
   // Update quantity
@@ -122,6 +125,16 @@ const removeFromCart = async (productId) => {
     }
   };
 
+  const clearCart = async (userId) => {
+  try {
+    await axios.post('http://localhost:5005/api/cart/clear', { userId }, getConfig());
+    setCart([]);  // clear local cart state immediately
+    // toast.info('Cart cleared.');
+  } catch (err) {
+    toast.error('Failed to clear cart.');
+  }
+};
+
   return (
     <CartContext.Provider
       value={{
@@ -131,6 +144,7 @@ const removeFromCart = async (productId) => {
         removeFromCart,
         updateQuantity,
         setCart,
+        clearCart,
       }}
     >
       {children}

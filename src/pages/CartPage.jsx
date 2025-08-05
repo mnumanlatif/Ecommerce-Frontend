@@ -36,23 +36,29 @@ const CartPage = () => {
   };
 
   const handleRemove = async (productId) => {
-    const token = localStorage.getItem('token');
-    try {
-      await removeFromCart(user._id, productId);
-      toast.success('Item removed!');
+  const token = localStorage.getItem('token');
+  try {
+    await axios.post(
+      'http://localhost:5005/api/cart/remove',
+      { userId: user._id, productId },
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
 
-      const res = await axios.get(
-        `http://localhost:5005/api/cart/cart?userId=${user._id}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-          withCredentials: true,
-        }
-      );
-      setCart(res.data.items || []);
-    } catch {
-      toast.error('Could not remove item.');
-    }
-  };
+    toast.success('Item removed!');
+
+    const res = await axios.get(
+      `http://localhost:5005/api/cart/cart?userId=${user._id}`,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        withCredentials: true,
+      }
+    );
+    setCart(res.data.items || []);
+  } catch {
+    toast.error('Could not remove item.');
+  }
+};
+
 
   const handleQuantityChange = async (productId, quantity) => {
     if (quantity < 1) return;
