@@ -59,3 +59,16 @@ export const checkout = async () => {
     throw err;
   }
 };
+
+export const updateQuantity = async (productId, quantity) => {
+  const user = JSON.parse(localStorage.getItem('user')); // or get from context
+  const userId = user?._id;
+
+  return axios.put(
+    `${BASE_URL}/update-quantity`,
+    { userId, productId, quantity },
+    getAuthHeaders() // ⬅️ ADD THIS
+  );
+};
+
+

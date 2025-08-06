@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { toast } from 'react-toastify';
+// import { toast } from 'react-toastify';
 
 export default function OrderSuccessModal({ onClose }) {
   const [animate, setAnimate] = useState(false);
 
   useEffect(() => {
     // Show toast success message when modal mounts
-    toast.success('Order completed successfully! Thank you for your purchase.');
+    // toast.success('Order completed successfully! Thank you for your purchase.');
 
     // Trigger animation start on mount
     setAnimate(true);

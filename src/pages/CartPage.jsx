@@ -1,69 +1,33 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable no-undef */
-import React, { useEffect, useState } from 'react';
-import { removeFromCart } from '../services/cartApi';
+import React from 'react';
 import { useAuth } from '../context/authContext';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { useCart } from '../context/CartContext';
 
 const DEFAULT_IMAGE = 'https://via.placeholder.com/300';
 
 const CartPage = () => {
+  // eslint-disable-next-line no-unused-vars
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [cart, setCart] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { cart, loading, updateQuantity, removeFromCart } = useCart();
 
   const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
-  const fetchCart = async () => {
-    const token = localStorage.getItem('token');
-    if (!user || !token) return setLoading(false);
-
+  const handleRemove = async (productId) => {
     try {
-      const res = await axios.get(
-        `http://localhost:5005/api/cart/cart?userId=${user._id}`,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      setCart(res.data.items || []);
-    } catch (err) {
-      console.error('Fetch error:', err);
-      toast.error('Failed to fetch cart');
-    } finally {
-      setLoading(false);
+      await removeFromCart(productId);
+      // Toast is already triggered in context, but you can add here if needed
+    } catch {
+      toast.error('Could not remove item.');
     }
   };
-
-  const handleRemove = async (productId) => {
-  const token = localStorage.getItem('token');
-  try {
-    await axios.post(
-      'http://localhost:5005/api/cart/remove',
-      { userId: user._id, productId },
-      { headers: { Authorization: `Bearer ${token}` } }
-    );
-
-    toast.success('Item removed!');
-
-    const res = await axios.get(
-      `http://localhost:5005/api/cart/cart?userId=${user._id}`,
-      {
-        headers: { Authorization: `Bearer ${token}` },
-        withCredentials: true,
-      }
-    );
-    setCart(res.data.items || []);
-  } catch {
-    toast.error('Could not remove item.');
-  }
-};
-
 
   const handleQuantityChange = async (productId, quantity) => {
     if (quantity < 1) return;
     try {
       await updateQuantity(productId, quantity);
+      // Toast handled in context
     } catch {
       toast.error('Failed to update quantity.');
     }
@@ -73,25 +37,17 @@ const CartPage = () => {
     navigate('/checkout', { state: { cart, total } });
   };
 
-  useEffect(() => {
-    fetchCart();
-  }, [user]);
-
   return (
     <section className="min-h-screen bg-white text-gray-800 py-14 px-6">
       <div className="max-w-7xl mx-auto">
         <header className="text-center mb-12">
-          <h1 className="text-5xl font-extrabold text-gray-900 drop-shadow">
-            🛒 Your Cart
-          </h1>
+          <h1 className="text-5xl font-extrabold text-gray-900 drop-shadow">🛒 Your Cart</h1>
           <p className="text-gray-500 mt-2">Review your items before checkout</p>
           <div className="mt-4 w-20 h-1 bg-blue-600 rounded-full mx-auto shadow-md"></div>
         </header>
 
         {loading ? (
-          <p className="text-center text-blue-500 text-xl animate-pulse">
-            Loading your cart...
-          </p>
+          <p className="text-center text-blue-500 text-xl animate-pulse">Loading your cart...</p>
         ) : cart.length === 0 ? (
           <div className="text-center text-gray-400 text-xl">Your cart is empty.</div>
         ) : (
@@ -118,9 +74,7 @@ const CartPage = () => {
                     <p className="text-gray-500 text-sm line-clamp-2 mb-2">
                       {item.description || 'No description.'}
                     </p>
-                    <p className="text-lg font-semibold text-blue-600">
-                      ${item.price.toFixed(2)}
-                    </p>
+                    <p className="text-lg font-semibold text-blue-600">${item.price.toFixed(2)}</p>
                   </div>
                   <div className="flex flex-col items-center space-y-2">
                     <div className="flex items-center bg-gray-100 px-4 py-1 rounded-full">
@@ -156,7 +110,9 @@ const CartPage = () => {
                 <div className="space-y-3">
                   {cart.map((item) => (
                     <div key={item.productId} className="flex justify-between text-gray-700">
-                      <span>{item.name} x {item.quantity}</span>
+                      <span>
+                        {item.name} x {item.quantity}
+                      </span>
                       <span>${(item.price * item.quantity).toFixed(2)}</span>
                     </div>
                   ))}
@@ -164,9 +120,7 @@ const CartPage = () => {
               </div>
 
               <div className="mt-6 border-t border-blue-200 pt-4">
-                <p className="text-xl font-bold text-blue-600 mb-4">
-                  Total: ${total.toFixed(2)}
-                </p>
+                <p className="text-xl font-bold text-blue-600 mb-4">Total: ${total.toFixed(2)}</p>
                 <button
                   onClick={handleCheckout}
                   className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl shadow hover:shadow-md transition duration-300"
@@ -179,7 +133,6 @@ const CartPage = () => {
         )}
       </div>
 
-      {/* Animation Style */}
       <style>{`
         @keyframes fadeInUp {
           0% { opacity: 0; transform: translateY(20px); }
