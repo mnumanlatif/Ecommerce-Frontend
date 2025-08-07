@@ -3,6 +3,7 @@ import useProducts from '../hooks/useProducts.jsx';
 import ProductCard from './ProductCard';
 import WhatsappButton from './WhatsappButton';
 import { toast } from 'react-toastify';
+import ChatbotWidget from './ChatbotWidget';
 
 const ProductList = () => {
   const { products, loading, error } = useProducts();
@@ -71,6 +72,7 @@ const ProductList = () => {
           }
         `}</style>
       </section>
+      <ChatbotWidget />
     </>
   );
 };

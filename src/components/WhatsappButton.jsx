@@ -12,7 +12,7 @@ const WhatsappButton = () => {
   };
 
   return (
-    <div className="fixed bottom-6 right-6 z-50">
+    <div className="fixed bottom-24 right-6 z-50">
       <button
         onClick={openWhatsapp}
         className="bg-green-500 hover:bg-green-600 text-white rounded-full p-4 shadow-lg hover:shadow-2xl transition-transform hover:scale-110 focus:outline-none focus:ring-4 focus:ring-green-400"
