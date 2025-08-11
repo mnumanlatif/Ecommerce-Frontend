@@ -10,6 +10,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <>
+  
     <AuthProvider>
       <CartProvider>
         <App />

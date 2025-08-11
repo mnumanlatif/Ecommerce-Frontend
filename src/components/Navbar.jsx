@@ -1,10 +1,7 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../context/authContext';
 import { useNavigate, Link } from 'react-router-dom';
 import { ShoppingCart, PackageSearch, Menu } from 'lucide-react';
-import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 import { useCart } from '../context/CartContext';
@@ -16,9 +13,12 @@ const Navbar = () => {
   const navigate = useNavigate();
   const { cartCount } = useCart();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [lang, setLang] = useState(i18n.language);
 
   useEffect(() => {
-    document.documentElement.dir = i18n.language === 'ur' ? 'rtl' : 'ltr';
+    // Commented out direction change, enable if needed
+    // document.documentElement.dir = i18n.language === 'ur' ? 'rtl' : 'ltr';
+    setLang(i18n.language);
   }, [i18n.language]);
 
   const handleLogout = async () => {
@@ -31,18 +31,20 @@ const Navbar = () => {
     }
   };
 
-  const changeLanguage = (lang) => {
-    i18n.changeLanguage(lang);
+  const toggleLanguage = () => {
+    const newLang = lang === 'en' ? 'ur' : 'en';
+    i18n.changeLanguage(newLang);
+    setLang(newLang);
   };
 
   return (
     <>
       <nav className="bg-gradient-to-r from-indigo-900 to-slate-900 bg-opacity-95 backdrop-blur-sm shadow-md px-6 md:px-12 py-4 flex items-center justify-between sticky top-0 z-50 text-white">
         <div className="flex items-center gap-x-4">
-          {/* Always visible Menu Button */}
           <button
             onClick={() => setSidebarOpen(true)}
             className="text-white focus:outline-none"
+            aria-label={t('Open menu')}
           >
             <Menu className="w-7 h-7" />
           </button>
@@ -67,7 +69,7 @@ const Navbar = () => {
           <Link
             to="/cart"
             className="relative flex items-center gap-2 hover:text-violet-300 transition duration-300"
-            aria-label="View cart"
+            aria-label={t('View cart')}
           >
             <ShoppingCart className="w-5 h-5" />
             <span className="font-medium text-lg">{t('cart')}</span>
@@ -78,15 +80,30 @@ const Navbar = () => {
             )}
           </Link>
 
-          <select
-            onChange={(e) => changeLanguage(e.target.value)}
-            value={i18n.language}
-            className="bg-slate-800 text-white text-sm px-3 py-1.5 rounded-lg shadow-inner border border-slate-600 focus:outline-none focus:ring-2 focus:ring-violet-500 transition"
+          {/* Language toggle button */}
+          <button
+            onClick={toggleLanguage}
+            aria-label={t('Toggle language')}
+            className="flex items-center bg-slate-800 hover:bg-slate-700 text-white px-4 py-1.5 rounded-full shadow-inner border border-slate-600 focus:outline-none focus:ring-2 focus:ring-violet-500 transition duration-300 select-none"
           >
-            <option value="en">English</option>
-            <option value="ur">اردو</option>
-            <option value="es">Español</option>
-          </select>
+            <span className={`mr-2 cursor-pointer ${lang === 'en' ? 'font-bold' : 'opacity-60'}`}>
+              English
+            </span>
+            <div
+              className={`w-10 h-6 rounded-full relative cursor-pointer bg-violet-600 transition-all duration-300 ${
+                lang === 'ur' ? 'bg-violet-700' : 'bg-slate-600'
+              }`}
+            >
+              <div
+                className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow-md transform transition-transform duration-300 ${
+                  lang === 'ur' ? 'translate-x-4' : ''
+                }`}
+              />
+            </div>
+            <span className={`ml-2 cursor-pointer ${lang === 'ur' ? 'font-bold' : 'opacity-60'}`}>
+              اردو
+            </span>
+          </button>
 
           {user ? (
             <button

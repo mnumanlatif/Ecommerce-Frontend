@@ -1,5 +1,6 @@
 {
   "catalog": "Product Catalog",
+  "Products": "Products",
   "cart": "Cart",
   "logout": "Logout",
   "home": "Home",
@@ -16,7 +17,7 @@
   "featuredProducts": "Featured Products",
   "latestProducts": "Latest Products",
   "addToCart": "Add to Cart",
-  "viewDetails": "View Details",  
+  "viewDetails": "View Details",
   "productDetails": "Product Details",
   "productReviews": "Product Reviews",
   "noProductsFound": "No products found",
@@ -51,11 +52,52 @@
   "selectCurrency": "Select Currency",
   "currency": {
     "usd": "USD",
-    "eur": "EUR", 
+    "eur": "EUR",
     "gbp": "GBP",
     "inr": "INR",
     "jpy": "JPY",
     "aud": "AUD",
     "cad": "CAD"
-  }
+  },
+  "hotProductsTitle": "🔥 Hot Products Just For You",
+  "hotProductsSubtitle": "Discover top-rated picks curated for your comfort and style.",
+  "productsList": {
+    "headphone": {
+      "name": "Headphone",
+      "description": "DJ headphones with superior sound quality.",
+      "price": "$89.99"
+    },
+    "luxuryWatch": {
+      "name": "Luxury Watch",
+      "description": "Elegant timepiece with modern craftsmanship.",
+      "price": "$249.99"
+    },
+    "goldRings": {
+      "name": "Gold Rings",
+      "description": "Stunning gold rings for special occasions.",
+      "price": "$129.50"
+    },
+    "leatherBelts": {
+      "name": "Leather Belts",
+      "description": "Classic leather belts, perfect for all outfits.",
+      "price": "$39.99"
+    },
+    "sneakers": {
+      "name": "Sneakers",
+      "description": "Trendy and comfortable sneakers for all-day wear.",
+      "price": "$69.99"
+    },
+    "bracelets": {
+      "name": "Bracelets",
+      "description": "Beautiful bracelets to elevate your style.",
+      "price": "$54.99"
+    },
+    "guitar": {
+      "name": "Guitar",
+      "description": "A good quality guitar",
+      "price": "$99.90"
+    }
+  },
+  "whatsappChatTitle": "Chat on WhatsApp",
+  "whatsappChatAriaLabel": "Chat with us on WhatsApp"
 }
