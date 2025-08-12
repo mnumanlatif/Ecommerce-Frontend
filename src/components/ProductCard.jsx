@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React from 'react';
 import { useAuth } from '../context/authContext';
 import { useCart } from '../context/CartContext';

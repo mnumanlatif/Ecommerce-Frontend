@@ -1,18 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../context/authContext';
 import { useNavigate, Link } from 'react-router-dom';
-import { ShoppingCart, PackageSearch, Menu, X } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
-import { useCart } from '../context/CartContext';
 import Sidebar from './Sidebar';
 
-const Navbar = () => {
+const AdminNavbar = () => {
   const { t, i18n } = useTranslation();
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-  const { cartCount } = useCart();
-
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [lang, setLang] = useState(i18n.language);
@@ -41,48 +38,26 @@ const Navbar = () => {
   return (
     <>
       <nav className="bg-gradient-to-r from-indigo-900 to-slate-900 bg-opacity-95 backdrop-blur-sm shadow-md px-4 md:px-12 py-4 flex items-center justify-between sticky top-0 z-50 text-white flex-wrap">
-        {/* Left side: sidebar toggle + logo */}
+        {/* Left: Sidebar toggle + logo */}
         <div className="flex items-center gap-x-4">
-          <button
+          {/* <button
             onClick={() => setSidebarOpen(true)}
             className="text-white focus:outline-none"
             aria-label={t('Open menu')}
           >
             <Menu className="w-7 h-7" />
-          </button>
+          </button> */}
 
           <Link
-            to="/products"
+            to="/admin"
             className="text-2xl md:text-3xl font-bold tracking-wider text-white hover:text-violet-300 transition duration-300"
           >
-            🛒 {t('catalog')}
+            🛠️ {t('catalog')}
           </Link>
         </div>
 
         {/* Desktop menu */}
         <div className="hidden md:flex items-center gap-x-6">
-          <Link
-            to="/products"
-            className="flex items-center gap-2 hover:text-violet-300 transition duration-300"
-          >
-            <PackageSearch className="w-5 h-5" />
-            <span className="font-medium text-lg">{t('Products')}</span>
-          </Link>
-
-          <Link
-            to="/cart"
-            className="relative flex items-center gap-2 hover:text-violet-300 transition duration-300"
-            aria-label={t('View cart')}
-          >
-            <ShoppingCart className="w-5 h-5" />
-            <span className="font-medium text-lg">{t('cartText')}</span>
-            {cartCount > 0 && (
-              <span className="absolute -top-2 -right-3 bg-violet-600 text-white text-[11px] font-semibold px-2 py-0.5 rounded-full shadow-lg animate-bounce">
-                {cartCount}
-              </span>
-            )}
-          </Link>
-
           {/* Language toggle */}
           <button
             onClick={toggleLanguage}
@@ -140,30 +115,6 @@ const Navbar = () => {
       {/* Mobile menu panel */}
       {mobileMenuOpen && (
         <div className="bg-indigo-900 bg-opacity-95 backdrop-blur-sm shadow-md px-6 py-4 flex flex-col gap-4 md:hidden text-white sticky top-16 z-40">
-          <Link
-            to="/products"
-            className="flex items-center gap-2 hover:text-violet-300 transition duration-300"
-            onClick={() => setMobileMenuOpen(false)}
-          >
-            <PackageSearch className="w-5 h-5" />
-            <span className="font-medium text-lg">{t('Products')}</span>
-          </Link>
-
-          <Link
-            to="/cart"
-            className="relative flex items-center gap-2 hover:text-violet-300 transition duration-300"
-            aria-label={t('View cart')}
-            onClick={() => setMobileMenuOpen(false)}
-          >
-            <ShoppingCart className="w-5 h-5" />
-            <span className="font-medium text-lg">{t('cartText')}</span>
-            {cartCount > 0 && (
-              <span className="absolute -top-2 -right-3 bg-violet-600 text-white text-[11px] font-semibold px-2 py-0.5 rounded-full shadow-lg animate-bounce">
-                {cartCount}
-              </span>
-            )}
-          </Link>
-
           {/* Language toggle */}
           <button
             onClick={toggleLanguage}
@@ -212,4 +163,4 @@ const Navbar = () => {
   );
 };
 
-export default Navbar;
+export default AdminNavbar;

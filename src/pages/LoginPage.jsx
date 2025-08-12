@@ -28,7 +28,7 @@ export default function LoginPage() {
       }
 
       if (user.role === 'admin') {
-        navigate('/admin/add-product');
+        navigate('/admin/Admin-Dashbaord');
       } else {
         navigate('/products');
       }

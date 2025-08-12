@@ -1,7 +1,20 @@
 {
-  "catalog": "Product Catalog",
+  "catalog": "Product Catalogue",
   "Products": "Products",
-  "cart": "Cart",
+
+  "cart": {
+    "title": "Cart",
+    "subtitle": "Your shopping details",
+    "summary": "Summary",
+    "remove": "Remove",
+    "total": "Total",
+    "proceed": "Proceed to Checkout",
+    "empty": "Your cart is empty"
+  },
+  "cartLabel": "Cart",
+  "cartText": "Cart",
+  "itemAddedToCart": "Product added to cart",
+  "Admin Dashboard": "Admin Dashboard",
   "logout": "Logout",
   "home": "Home",
   "about": "About Us",
@@ -13,7 +26,7 @@
   "language": "Language",
   "darkMode": "Dark Mode",
   "lightMode": "Light Mode",
-  "welcome": "Welcome to Our Store",
+  "welcome": "Welcome to our store",
   "featuredProducts": "Featured Products",
   "latestProducts": "Latest Products",
   "addToCart": "Add to Cart",
@@ -28,7 +41,7 @@
   "orderSummary": "Order Summary",
   "total": "Total",
   "orderPlaced": "Order placed successfully",
-  "orderFailed": "Order placement failed",
+  "orderFailed": "Failed to place order",
   "profileUpdated": "Profile updated successfully",
   "profileUpdateFailed": "Profile update failed",
   "passwordChanged": "Password changed successfully",
@@ -41,8 +54,8 @@
   "networkError": "Network error, please check your connection",
   "loading": "Loading...",
   "noReviews": "No reviews yet",
-  "writeReview": "Write a Review",
-  "submitReview": "Submit Review",
+  "writeReview": "Write a review",
+  "submitReview": "Submit review",
   "reviewSubmitted": "Review submitted successfully",
   "reviewSubmitFailed": "Failed to submit review",
   "outOfStock": "Out of Stock",
@@ -51,53 +64,58 @@
   "selectLanguage": "Select Language",
   "selectCurrency": "Select Currency",
   "currency": {
-    "usd": "USD",
-    "eur": "EUR",
-    "gbp": "GBP",
-    "inr": "INR",
-    "jpy": "JPY",
-    "aud": "AUD",
-    "cad": "CAD"
+    "usd": "US Dollar",
+    "eur": "Euro",
+    "gbp": "British Pound",
+    "inr": "Indian Rupee",
+    "jpy": "Japanese Yen",
+    "aud": "Australian Dollar",
+    "cad": "Canadian Dollar"
   },
-  "hotProductsTitle": "🔥 Hot Products Just For You",
-  "hotProductsSubtitle": "Discover top-rated picks curated for your comfort and style.",
+  "hotProductsTitle": "🔥 Special Products for You",
+  "hotProductsSubtitle": "Discover the best products chosen for your comfort and style.",
   "productsList": {
     "headphone": {
       "name": "Headphone",
-      "description": "DJ headphones with superior sound quality.",
+      "description": "DJ headphones with high-quality sound.",
       "price": "$89.99"
     },
     "luxuryWatch": {
       "name": "Luxury Watch",
-      "description": "Elegant timepiece with modern craftsmanship.",
+      "description": "Elegant watch with modern craftsmanship.",
       "price": "$249.99"
     },
     "goldRings": {
       "name": "Gold Rings",
-      "description": "Stunning gold rings for special occasions.",
+      "description": "Beautiful gold rings for special occasions.",
       "price": "$129.50"
     },
     "leatherBelts": {
-      "name": "Leather Belts",
-      "description": "Classic leather belts, perfect for all outfits.",
+      "name": "Leather Belt",
+      "description": "Classic leather belt perfect for any outfit.",
       "price": "$39.99"
     },
     "sneakers": {
       "name": "Sneakers",
-      "description": "Trendy and comfortable sneakers for all-day wear.",
+      "description": "Modern and comfortable sneakers for all-day wear.",
       "price": "$69.99"
     },
     "bracelets": {
       "name": "Bracelets",
-      "description": "Beautiful bracelets to elevate your style.",
+      "description": "Elegant bracelets to enhance your style.",
       "price": "$54.99"
     },
     "guitar": {
       "name": "Guitar",
-      "description": "A good quality guitar",
+      "description": "High-quality guitar",
       "price": "$99.90"
-    }
+    },
+    "Iphone 16": {
+      "name": "iPhone 16",
+      "description": "Latest model with full battery health box pack",
+      "price": "$500.00"
   },
-  "whatsappChatTitle": "Chat on WhatsApp",
+  "whatsappChatTitle": "Contact us on WhatsApp",
   "whatsappChatAriaLabel": "Chat with us on WhatsApp"
+}
 }

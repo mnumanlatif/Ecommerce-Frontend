@@ -7,8 +7,11 @@ import RegisterPage from './pages/RegisterPage';
 import ProductList from './components/ProductList';
 import CartPage from './pages/CartPage';
 import CheckoutPage from './pages/CheckoutPage';
+import AdminDashboard from './pages/AdminDashboardPage'; // Your dashboard page
 import AddProductPage from './pages/AddProductPage';
+import EditProductPage from './pages/EditProductPage';
 import Navbar from './components/Navbar';
+import AdminNavbar from './components/AdminNavbar';
 
 const ProtectedRoute = ({ user, children }) => {
   if (!user) return <Navigate to="/" replace />;
@@ -26,11 +29,10 @@ export default function App() {
   const isAdmin = user?.role === 'admin';
 
   useEffect(() => {
-    // Force LTR direction on html and body
+    // Force LTR direction
     document.documentElement.setAttribute('dir', 'ltr');
     document.body.setAttribute('dir', 'ltr');
 
-    // Inject CSS to enforce LTR everywhere (important to override other styles)
     const style = document.createElement('style');
     style.innerHTML = `
       html, body {
@@ -40,7 +42,6 @@ export default function App() {
     `;
     document.head.appendChild(style);
 
-    // Cleanup style on unmount
     return () => {
       document.head.removeChild(style);
     };
@@ -50,7 +51,8 @@ export default function App() {
 
   return (
     <BrowserRouter>
-      {user && <Navbar />}
+      {/* Conditionally render Navbar based on role */}
+      {user && (isAdmin ? <AdminNavbar /> : <Navbar />)}
       <Routes>
         <Route
           path="/"
@@ -58,7 +60,7 @@ export default function App() {
             !user ? (
               <LoginPage />
             ) : (
-              <Navigate to={isAdmin ? '/admin/add-product' : '/products'} replace />
+              <Navigate to={isAdmin ? '/admin' : '/products'} replace />
             )
           }
         />
@@ -67,6 +69,7 @@ export default function App() {
           element={!user ? <RegisterPage /> : <Navigate to="/products" replace />}
         />
 
+        {/* User Routes */}
         <Route
           path="/products"
           element={
@@ -92,6 +95,15 @@ export default function App() {
           }
         />
 
+        {/* Admin Routes */}
+        <Route
+          path="/admin"
+          element={
+            <AdminRoute user={user} isAdmin={isAdmin}>
+              <AdminDashboard />
+            </AdminRoute>
+          }
+        />
         <Route
           path="/admin/add-product"
           element={
@@ -100,12 +112,21 @@ export default function App() {
             </AdminRoute>
           }
         />
+        <Route
+          path="/admin/edit-product/:id"
+          element={
+            <AdminRoute user={user} isAdmin={isAdmin}>
+              <EditProductPage />
+            </AdminRoute>
+          }
+        />
 
+        {/* Fallback route */}
         <Route
           path="*"
           element={
             <Navigate
-              to={user ? (isAdmin ? '/admin/add-product' : '/products') : '/'}
+              to={user ? (isAdmin ? '/admin' : '/products') : '/'}
               replace
             />
           }
